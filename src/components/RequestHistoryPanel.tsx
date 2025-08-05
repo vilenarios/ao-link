@@ -13,11 +13,12 @@ import Grid2 from "@mui/material/Unstable_Grid2/Grid2"
 import { useActiveAddress } from "@arweave-wallet-kit/react"
 import { persistentAtom } from "@nanostores/persistent"
 import { useStore } from "@nanostores/react"
+import JSONbig from "json-bigint"
 
 export const dryRunHistoryStore = persistentAtom<any[]>(
   "dryRunHistory",
   [],
-  { encode: JSON.stringify, decode: JSON.parse },
+  { encode: JSONbig.stringify, decode: JSONbig.parse },
 )
 
 const MAX_HISTORY = 5;

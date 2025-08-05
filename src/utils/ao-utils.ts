@@ -1,13 +1,15 @@
 import { DryRunResult } from "@permaweb/aoconnect/dist/lib/dryrun"
 import { MessageResult } from "@permaweb/aoconnect/dist/lib/result"
 
+import JSONbig from "json-bigint"
+
 /**
  * Prettifies a message/dryrun result by parsing any stringified JSON found in the `Output.data` or `Messages[].Data` fields
  */
 export function prettifyResult(json: MessageResult | DryRunResult): MessageResult | DryRunResult {
   if (json.Output?.data) {
     try {
-      const parsed = JSON.parse(json.Output.data)
+      const parsed = JSONbig.parse(json.Output.data)
       json.Output.data = parsed
     } catch {
       console.log("Failed to parse Output.data")
@@ -18,7 +20,7 @@ export function prettifyResult(json: MessageResult | DryRunResult): MessageResul
     json.Messages.forEach((message) => {
       if (message.Data) {
         try {
-          const parsed = JSON.parse(message.Data)
+          const parsed = JSONbig.parse(message.Data)
           message.Data = parsed
         } catch {
           console.log("Failed to parse message.Data")

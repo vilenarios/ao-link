@@ -1,5 +1,6 @@
 import { useStore } from "@nanostores/react"
 import { useEffect, useMemo } from "react"
+import JSONbig from "json-bigint"
 
 import { TokenInfo, getTokenInfo } from "../services/token-api"
 import { $tokenInfoCache } from "../stores/token-info-store"
@@ -15,7 +16,7 @@ export function useTokenInfo(tokenId = "") {
   const isValid = cachedValue !== "error"
 
   const tokenInfo: TokenInfo | undefined | null = useMemo(
-    () => (isFetched ? (isValid ? JSON.parse(cachedValue) : null) : undefined),
+    () => (isFetched ? (isValid ? JSONbig.parse(cachedValue) : null) : undefined),
     [cachedValue, isFetched, isValid],
   )
 
