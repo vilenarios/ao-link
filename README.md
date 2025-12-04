@@ -11,3 +11,12 @@ AO Link is a web-based explorer and visualization tool for the AO protocol. It p
 - 🎨 Dark/Light theme support
 - ⚡ Real-time data updates
 
+## Project Status
+
+This project was originally developed and maintained by Autonomous Finance (AF). **This repository is being archived by AF** and will no longer receive active maintenance or updates.
+
+The project remains open source under the MIT License and is available for the community to use, fork, and continue development. If you're interested in maintaining or contributing to this project, we encourage you to fork it and continue building on it!
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
