@@ -1,7 +1,6 @@
 import { Box, Container, Link, Stack, Typography } from "@mui/material"
 import React from "react"
 
-import { AutonomousFinanceLogo } from "./AutonomousFinanceLogo"
 import { GoldSkyLogo } from "./GoldSkyLogo"
 
 export function Footer() {
@@ -52,43 +51,7 @@ export function Footer() {
               /
             </Typography>
             <Link
-              href="https://ao.defi.ao"
-              target="_blank"
-              sx={{
-                color: "rgb(180, 180, 180)",
-                "&:hover": {
-                  color: "#FFF",
-                },
-              }}
-              fontWeight={500}
-              underline="none"
-              variant="body2"
-            >
-              AO
-            </Link>
-            <Typography component="span" sx={{ opacity: 0.4 }} variant="caption">
-              /
-            </Typography>
-            <Link
-              href="https://gygbo2cdld7i3t624il5zxa3ezyv6sa2ikvhrlmabah2etw45wua.arweave.net/NgwXaENY_o3P2uIX3NwbJnFfSBpCqnitgAgPok7c7ag/#/spec"
-              target="_blank"
-              sx={{
-                color: "rgb(180, 180, 180)",
-                "&:hover": {
-                  color: "#FFF",
-                },
-              }}
-              fontWeight={500}
-              underline="none"
-              variant="body2"
-            >
-              SPEC
-            </Link>
-            <Typography component="span" sx={{ opacity: 0.4 }} variant="caption">
-              /
-            </Typography>
-            <Link
-              href="https://github.com/Autonomous-Finance"
+              href="https://github.com/ar-io"
               target="_blank"
               sx={{
                 color: "rgb(180, 180, 180)",
@@ -106,7 +69,7 @@ export function Footer() {
               /
             </Typography>
             <Link
-              href="https://x.com/autonomous_af"
+              href="https://x.com/ar_io_network"
               target="_blank"
               sx={{
                 color: "rgb(180, 180, 180)",
@@ -124,25 +87,7 @@ export function Footer() {
               /
             </Typography>
             <Link
-              href="https://stats.dataos.so/"
-              target="_blank"
-              sx={{
-                color: "rgb(180, 180, 180)",
-                "&:hover": {
-                  color: "#FFF",
-                },
-              }}
-              fontWeight={500}
-              underline="none"
-              variant="body2"
-            >
-              ARWEAVE STATS
-            </Link>{" "}
-            <Typography component="span" sx={{ opacity: 0.4 }} variant="caption">
-              /
-            </Typography>
-            <Link
-              href="https://docs.autonomous.finance/products/ecosystem-tooling/ao-link"
+              href="https://docs.ar.io"
               target="_blank"
               sx={{
                 color: "rgb(180, 180, 180)",
@@ -158,26 +103,11 @@ export function Footer() {
             </Link>
           </Stack>
           {/* Spacer for mobile */}
-          <Box sx={{ display: { xs: 'inline-block', md: 'none' }, minWidth: 32 }} />
+          <Box sx={{ display: { xs: "inline-block", md: "none" }, minWidth: 32 }} />
           <Stack direction="row" gap={1} alignItems="center">
             <Typography component="span" sx={{ color: "rgb(180, 180, 180)" }} variant="caption">
               Powered by
             </Typography>
-            <Link
-              href="https://autonomous.finance"
-              target="_blank"
-              sx={{
-                color: "rgb(180, 180, 180)",
-                "&:hover": {
-                  color: "#FFF",
-                },
-              }}
-              fontWeight={500}
-              underline="none"
-              variant="body2"
-            >
-              <AutonomousFinanceLogo />
-            </Link>
             <Link
               href="https://goldsky.com"
               target="_blank"

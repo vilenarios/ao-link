@@ -8,7 +8,7 @@ export function CodeEditor(props: EditorProps) {
 
   const setCustomTheme = useCallback(
     (editor: any, monaco: Monaco) => {
-      monaco.editor.defineTheme("ao-link", {
+      monaco.editor.defineTheme("ario-explorer", {
         base: theme.palette.mode === "dark" ? "vs-dark" : "vs",
         inherit: true,
         rules: [],
@@ -16,7 +16,7 @@ export function CodeEditor(props: EditorProps) {
           "editor.background": theme.palette.background.paper,
         },
       })
-      monaco.editor.setTheme("ao-link")
+      monaco.editor.setTheme("ario-explorer")
     },
     [theme.palette.background.paper, theme.palette.mode],
   )

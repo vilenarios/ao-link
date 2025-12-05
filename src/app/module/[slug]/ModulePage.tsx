@@ -4,7 +4,7 @@ import Grid2 from "@mui/material/Unstable_Grid2/Grid2"
 import { useQuery } from "@tanstack/react-query"
 import React, { useMemo, useState } from "react"
 
-import { useParams } from "react-router-dom"
+import { Navigate, useParams } from "react-router-dom"
 
 import { ProcessesByModule } from "@/app/entity/[slug]/ProcessesByModule"
 import { ArNSNameDisplay } from "@/components/ArNSNameChip"
@@ -13,9 +13,10 @@ import { LoadingSkeletons } from "@/components/LoadingSkeletons"
 import { SectionInfo } from "@/components/SectionInfo"
 import { SectionInfoWithChip } from "@/components/SectionInfoWithChip"
 import { Subheading } from "@/components/Subheading"
+import { TabWithCount } from "@/components/TabWithCount"
+import { ARIO_MODULE_ID } from "@/config/ario"
 import { useArnsNameForAddress } from "@/hooks/useArnsNameForAddress"
 
-import { TabWithCount } from "@/components/TabWithCount"
 import { getMessageById } from "@/services/messages-api"
 import { formatFullDate, formatRelative } from "@/utils/date-utils"
 import { formatNumber } from "@/utils/number-utils"
@@ -31,18 +32,25 @@ export function ModulePage() {
 
   const [processesCount, setProcessesCount] = useState<number>()
 
+  // Only validate and fetch if it's the AR.IO module
+  const isArioModule = moduleId === ARIO_MODULE_ID
   const isValidId = useMemo(() => isArweaveId(String(moduleId)), [moduleId])
-  const { data: moduleArnsName } = useArnsNameForAddress(moduleId)
+  const { data: moduleArnsName } = useArnsNameForAddress(isArioModule ? moduleId : "")
 
   const {
     data: message,
     isLoading,
     error,
   } = useQuery({
-    enabled: Boolean(moduleId) && isValidId,
+    enabled: Boolean(moduleId) && isValidId && isArioModule,
     queryKey: ["message", moduleId],
     queryFn: () => getMessageById(moduleId),
   })
+
+  // Redirect to AR.IO module if a different module is requested
+  if (moduleId && moduleId !== ARIO_MODULE_ID) {
+    return <Navigate to={`/module/${ARIO_MODULE_ID}`} replace />
+  }
 
   if (isLoading) {
     return <LoadingSkeletons />
@@ -58,19 +66,19 @@ export function ModulePage() {
 
   return (
     <Stack component="main" gap={6} paddingY={4} key={moduleId}>
-      <Subheading 
-        type="MODULE" 
+      <Subheading
+        type="MODULE"
         value={
           <Stack direction="row" gap={1} alignItems="center">
             <IdBlock label={moduleId} />
             {moduleArnsName && (
               <ArNSNameDisplay
                 name={moduleArnsName}
-                onClick={() => window.open(`https://${moduleArnsName}.ar.io`, '_blank')}
+                onClick={() => window.open(`https://${moduleArnsName}.ar.io`, "_blank")}
               />
             )}
           </Stack>
-        } 
+        }
       />
       <Grid2 container spacing={{ xs: 2, lg: 12 }}>
         <Grid2 xs={12} lg={6}>

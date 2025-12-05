@@ -4,8 +4,6 @@ import { useColorScheme } from "@mui/material"
 import AoSyncStrategy from "@vela-ventures/aosync-strategy"
 import React from "react"
 
-import { MainFontFF } from "./fonts"
-
 export function ArweaveProvider({ children }: { children: React.ReactNode }) {
   const { mode = "dark" } = useColorScheme()
 
@@ -16,7 +14,7 @@ export function ArweaveProvider({ children }: { children: React.ReactNode }) {
         ensurePermissions: true,
         strategies: [new WanderStrategy(), new AoSyncStrategy()],
         appInfo: {
-          name: "AoLink",
+          name: "AR.IO Network Explorer",
         },
       }}
       theme={{

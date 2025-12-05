@@ -416,33 +416,15 @@ export function MessageTreeGraph({
           <div>
             <div>
               <span>Message ID:</span>
-              <a
-                href={`https://www.ao.link/#/message/${tooltip.data.id}`}
-                target="_blank"
-                referrerPolicy="no-referrer"
-              >
-                {tooltip.data.id}
-              </a>
+              <a href={`#/message/${tooltip.data.id}`}>{tooltip.data.id}</a>
             </div>
             <div>
               <span>From:</span>
-              <a
-                href={`https://www.ao.link/#/entity/${tooltip.data.from}`}
-                target="_blank"
-                referrerPolicy="no-referrer"
-              >
-                {tooltip.data.from}
-              </a>
+              <a href={`#/entity/${tooltip.data.from}`}>{tooltip.data.from}</a>
             </div>
             <div>
               <span>To:</span>
-              <a
-                href={`https://www.ao.link/#/entity/${tooltip.data.to}`}
-                target="_blank"
-                referrerPolicy="no-referrer"
-              >
-                {tooltip.data.to}
-              </a>
+              <a href={`#/entity/${tooltip.data.to}`}>{tooltip.data.to}</a>
             </div>
             {tooltip.data.result?.error && <div>Error: {tooltip.data.result.error}</div>}
             <div>Action: {tooltip.data.tags["Action"] ?? ""}</div>

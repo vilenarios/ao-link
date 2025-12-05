@@ -13,6 +13,8 @@ import * as ReactDOM from "react-dom/client"
 
 import { HashRouter, Route, Routes } from "react-router-dom"
 
+import { Navigate } from "react-router-dom"
+
 import HomePage from "./app/HomePage"
 import ArnsPage from "./app/arns/ArnsPage"
 import BlockPage from "./app/block/[slug]/BlockPage"
@@ -20,12 +22,9 @@ import BlocksPage from "./app/blocks/BlocksPage"
 import EntityPage from "./app/entity/[slug]/EntityPage"
 import { MessagePage } from "./app/message/[slug]/MessagePage"
 import { ModulePage } from "./app/module/[slug]/ModulePage"
-import ModulesPage from "./app/modules/ModulesPage"
-import ProcessesPage from "./app/processes/ProcessesPage"
-
-import { SwapPage } from "./app/swap/SwapPage"
 import TokenPage from "./app/token/[slug]/TokenPage"
 import RootLayoutUI from "./components/RootLayout/RootLayoutUI"
+import { ARIO_PROCESS_ID, ARIO_MODULE_ID, ARIO_TOKEN_ID } from "./config/ario"
 import { FourZeroFourPage } from "./pages/404"
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -36,13 +35,16 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <Route path="/message/:messageId" element={<MessagePage />} />
         <Route path="/blocks" element={<BlocksPage />} />
         <Route path="/block/:blockHeight" element={<BlockPage />} />
-        <Route path="/modules" element={<ModulesPage />} />
+        {/* Module route redirects to AR.IO module */}
+        <Route path="/module" element={<Navigate to={`/module/${ARIO_MODULE_ID}`} replace />} />
         <Route path="/module/:moduleId" element={<ModulePage />} />
-        <Route path="/processes" element={<ProcessesPage />} />
+        {/* Process route redirects to AR.IO process */}
+        <Route path="/process" element={<Navigate to={`/entity/${ARIO_PROCESS_ID}`} replace />} />
         <Route path="/entity/:entityId" element={<EntityPage />} />
+        {/* Token route redirects to AR.IO token */}
+        <Route path="/token" element={<Navigate to={`/token/${ARIO_TOKEN_ID}`} replace />} />
         <Route path="/token/:tokenId" element={<TokenPage />} />
         <Route path="/arns" element={<ArnsPage />} />
-        <Route path="/swap/:messageId" element={<SwapPage />} />
         <Route path="*" element={<FourZeroFourPage />} />
       </Routes>
     </RootLayoutUI>

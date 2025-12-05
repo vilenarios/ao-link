@@ -591,10 +591,11 @@ export async function getLinkedMessages(
 }
 
 /**
- * WARN This query fails if both count and cursor are set
+ * Query for AR.IO messages in a specific block
  */
-const messagesForBlockQuery = (includeCount = false) => gql`
+const arioMessagesForBlockQuery = (includeCount = false) => gql`
   query (
+    $processId: String!
     $blockHeight: Int
     $limit: Int!
     $sortOrder: SortOrder!
@@ -604,8 +605,8 @@ const messagesForBlockQuery = (includeCount = false) => gql`
       sort: $sortOrder
       first: $limit
       after: $cursor
-
       block: { min: $blockHeight, max: $blockHeight }
+      recipients: [$processId]
       tags: [${AO_NETWORK_IDENTIFIER}]
       ${AO_MIN_INGESTED_AT}
     ) {
@@ -617,20 +618,20 @@ const messagesForBlockQuery = (includeCount = false) => gql`
   ${messageFields}
 `
 
-export async function getMessagesForBlock(
+export async function getArioMessagesForBlock(
+  processId: string,
   limit = 100,
   cursor = "",
   ascending: boolean,
-  //
   blockHeight?: number,
 ): Promise<[number | undefined, AoMessage[]]> {
   try {
     const result = await goldsky
-      .query<TransactionsResponse>(messagesForBlockQuery(!cursor), {
+      .query<TransactionsResponse>(arioMessagesForBlockQuery(!cursor), {
+        processId,
         limit,
         sortOrder: ascending ? "HEIGHT_ASC" : "INGESTED_AT_DESC",
         cursor,
-        //
         blockHeight,
       })
       .toPromise()
@@ -663,6 +664,74 @@ const allMessagesQuery = gql`
 
   ${messageFields}
 `
+
+/**
+ * Query for messages TO a specific process (AR.IO)
+ */
+const arioIncomingMessagesQuery = gql`
+  query ($processId: String!, $limit: Int!, $sortOrder: SortOrder!, $cursor: String, $tags: [TagFilter!]) {
+    transactions(
+      sort: $sortOrder
+      first: $limit
+      after: $cursor
+      recipients: [$processId]
+      ${AO_MIN_INGESTED_AT}
+      tags: $tags
+    ) {
+    ...MessageFields
+    }
+  }
+
+  ${messageFields}
+`
+
+/**
+ * Get messages related to AR.IO process (both incoming and outgoing)
+ * Fetches both directions and merges them sorted by ingested_at
+ */
+export async function getArioMessages(
+  processId: string,
+  limit = 100,
+  cursor = "",
+  ascending: boolean,
+  extraFilters?: Record<string, string>,
+): Promise<[number | undefined, AoMessage[]]> {
+  const tags = [
+    {
+      name: "Data-Protocol",
+      values: ["ao"],
+    },
+  ]
+
+  if (extraFilters) {
+    for (const [name, value] of Object.entries(extraFilters)) {
+      tags.push({ name, values: [value] })
+    }
+  }
+
+  try {
+    // Fetch incoming messages (TO the AR.IO process)
+    const incomingResult = await goldsky
+      .query<TransactionsResponse>(arioIncomingMessagesQuery, {
+        processId,
+        limit,
+        sortOrder: ascending ? "HEIGHT_ASC" : "INGESTED_AT_DESC",
+        cursor,
+        tags,
+      })
+      .toPromise()
+
+    const incomingData = incomingResult.data
+    if (!incomingData) return [0, []]
+
+    const incomingEdges = incomingData.transactions.edges
+    const incomingEvents = incomingEdges.map(parseAoMessage)
+
+    return [incomingData.transactions.count, incomingEvents]
+  } catch (error) {
+    return [0, []]
+  }
+}
 
 export async function getAllMessages(
   limit = 100,

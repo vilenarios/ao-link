@@ -1,7 +1,8 @@
 import React, { memo } from "react"
 
 import { EntityMessagesTable } from "@/app/entity/[slug]/EntityMessagesTable"
-import { getMessagesForBlock } from "@/services/messages-api"
+import { ARIO_PROCESS_ID } from "@/config/ario"
+import { getArioMessagesForBlock } from "@/services/messages-api"
 
 type EntityMessagesProps = {
   blockHeight: number
@@ -18,11 +19,13 @@ function BaseBlockMessagesTable(props: EntityMessagesProps) {
 
   return (
     <EntityMessagesTable
+      entityId={ARIO_PROCESS_ID}
       allowTypeFilter
       hideBlockColumn
       pageSize={pageSize}
       fetchFunction={async (offset, ascending, sortField, lastRecord) => {
-        const [count, records] = await getMessagesForBlock(
+        const [count, records] = await getArioMessagesForBlock(
+          ARIO_PROCESS_ID,
           pageSize,
           lastRecord?.cursor,
           ascending,

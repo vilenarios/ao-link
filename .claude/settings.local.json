@@ -6,7 +6,10 @@
       "Bash(npm install:*)",
       "Bash(rm:*)",
       "Bash(npm run check-types:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(npx tsc:*)",
+      "Bash(yarn install:*)",
+      "Bash(yarn build)"
     ],
     "deny": []
   }

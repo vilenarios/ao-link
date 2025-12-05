@@ -17,28 +17,56 @@ import React, { type ChangeEvent, useState, useCallback, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 
 import { TypeBadge } from "@/components/TypeBadge"
+import { ARIO_PROCESS_ID } from "@/config/ario"
+import { getRecordValue } from "@/services/arns-api"
 import { resolveArNSName } from "@/services/arns-service"
 import { getMessageById } from "@/services/messages-api"
-import { getTokenInfo } from "@/services/token-api"
 import { TYPE_PATH_MAP } from "@/utils/data-utils"
 import { isArweaveId } from "@/utils/utils"
 
-type ResultType =
-  | "Message"
-  | "Entity"
-  | "Block"
-  | "Checkpoint"
-  | "Assignment"
-  | "Process"
-  | "Token"
-  | "Swap"
-  | "ArNS"
-  | "User"
+type ResultType = "Message" | "Process" | "ArNS" | "User"
 
 type Result = {
   label: string
   id: string
   type: ResultType
+}
+
+/**
+ * Check if a message is related to AR.IO (sent to or from the AR.IO process)
+ */
+function isArioRelatedMessage(msg: { to: string; from: string }): boolean {
+  return msg.to === ARIO_PROCESS_ID || msg.from === ARIO_PROCESS_ID
+}
+
+// Simple in-memory cache for ANT process checks (avoid repeated dry-runs)
+const antProcessCache = new Map<string, { result: boolean; timestamp: number }>()
+const ANT_CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+const ANT_CACHE_MAX_SIZE = 100 // Prevent unbounded memory growth
+
+async function checkIsAntProcess(processId: string): Promise<boolean> {
+  // Check cache first
+  const cached = antProcessCache.get(processId)
+  if (cached && Date.now() - cached.timestamp < ANT_CACHE_TTL) {
+    return cached.result
+  }
+
+  try {
+    const record = await getRecordValue(processId)
+    const isAnt = !!(record && record.antId)
+
+    // Evict oldest entries if cache is full
+    if (antProcessCache.size >= ANT_CACHE_MAX_SIZE) {
+      const firstKey = antProcessCache.keys().next().value
+      if (firstKey) antProcessCache.delete(firstKey)
+    }
+
+    antProcessCache.set(processId, { result: isAnt, timestamp: Date.now() })
+    return isAnt
+  } catch {
+    antProcessCache.set(processId, { result: false, timestamp: Date.now() })
+    return false
+  }
 }
 
 async function findByText(text: string, abortSignal?: AbortSignal): Promise<Result[]> {
@@ -47,86 +75,67 @@ async function findByText(text: string, abortSignal?: AbortSignal): Promise<Resu
 
   // Check if request was cancelled
   if (abortSignal?.aborted) {
-    throw new Error('Search cancelled')
+    throw new Error("Search cancelled")
   }
 
-  // Determine what searches to perform based on input pattern
+  // Determine what type of search to perform based on input pattern
   const isLikelyArweaveId = isArweaveId(text) || text.length === 43
-  
-  const [msg, tokenInfo, arnsResolution] = await Promise.all([
-    getMessageById(text).catch((err) => {
-      console.log("Message not found", text, err)
-      return null
-    }),
-    getTokenInfo(text).catch((err) => {
-      console.log("Token not found", text, err)
-      return null
-    }),
-    // Only search ArNS if the input doesn't look like an Arweave ID
-    !isLikelyArweaveId ? resolveArNSName(text).catch((err) => {
-      console.log("ArNS not found", text, err)
-      return null
-    }) : Promise.resolve(null)
-  ])
 
-  const results = []
+  const results: Result[] = []
 
-  if (msg && msg.type) {
-    results.push({
-      label: text,
-      id: msg.id,
-      type: msg.type,
-    })
-  }
+  if (isLikelyArweaveId) {
+    // Input looks like an Arweave ID - search for messages and check if it's an ANT
+    const [msg, isAnt] = await Promise.all([
+      getMessageById(text).catch(() => null),
+      checkIsAntProcess(text),
+    ])
 
-  if (msg && msg.action === "Transfer") {
-    results.push({
-      label: text,
-      id: msg.id,
-      type: "Swap" as const,
-    })
-  }
-
-  if (tokenInfo) {
-    results.push({
-      label: text,
-      id: text,
-      type: "Token" as ResultType,
-    })
-  }
-
-  if (!msg && isArweaveId(text)) {
-    results.push({
-      label: text,
-      id: text,
-      type: "Entity" as ResultType,
-    })
-  }
-
-  if (arnsResolution) {
-    // 1. ArNS management result - links to arns.ar.io
-    results.push({
-      label: `${text} (ArNS Management)`,
-      id: text,
-      type: "ArNS" as ResultType,
-    })
-    
-    // 2. User result - the owner of the ArNS name
-    if (arnsResolution.owner && !results.some(r => r.id === arnsResolution.owner)) {
+    // Check if the searched ID is an ANT process
+    if (isAnt) {
       results.push({
-        label: `${arnsResolution.owner} (ArNS Owner)`,
-        id: arnsResolution.owner,
-        type: "User" as ResultType,
-      })
-    }
-    
-    // 3. Process result - the ANT process that manages this name
-    if (arnsResolution.processId && !results.some(r => r.id === arnsResolution.processId)) {
-      results.push({
-        label: `${arnsResolution.processId} (ANT Process)`,
-        id: arnsResolution.processId,
+        label: `${text} (ANT Process)`,
+        id: text,
         type: "Process" as ResultType,
       })
+    }
+
+    // Only show messages that are AR.IO related (and not already added as ANT)
+    if (msg && msg.type && isArioRelatedMessage(msg) && !results.some((r) => r.id === msg.id)) {
+      results.push({
+        label: text,
+        id: msg.id,
+        type: msg.type === "Process" ? "Process" : "Message",
+      })
+    }
+  } else {
+    // Input is likely an ArNS name - only search ArNS (don't waste calls on GraphQL/ANT checks)
+    const arnsResolution = await resolveArNSName(text).catch(() => null)
+
+    if (arnsResolution) {
+      // 1. ArNS management result - links to arns.ar.io
+      results.push({
+        label: `${text} (ArNS Management)`,
+        id: text,
+        type: "ArNS" as ResultType,
+      })
+
+      // 2. User result - the owner of the ArNS name
+      if (arnsResolution.owner && !results.some((r) => r.id === arnsResolution.owner)) {
+        results.push({
+          label: `${arnsResolution.owner} (ArNS Owner)`,
+          id: arnsResolution.owner,
+          type: "User" as ResultType,
+        })
+      }
+
+      // 3. Process result - the ANT process that manages this name
+      if (arnsResolution.processId && !results.some((r) => r.id === arnsResolution.processId)) {
+        results.push({
+          label: `${arnsResolution.processId} (ANT Process)`,
+          id: arnsResolution.processId,
+          type: "Process" as ResultType,
+        })
+      }
     }
   }
 
@@ -138,7 +147,7 @@ const SearchBar = () => {
   const [inputValue, setInputValue] = useState("")
   const [results, setResults] = useState<Result[]>([])
   const [loading, setLoading] = useState(false)
-  
+
   const debounceTimeoutRef = useRef<NodeJS.Timeout>()
   const abortControllerRef = useRef<AbortController>()
 
@@ -157,26 +166,13 @@ const SearchBar = () => {
     // Create new abort controller for this request
     abortControllerRef.current = new AbortController()
 
-    const numericString = /^\d+$/
-    if (numericString.test(value)) {
-      setResults([
-        {
-          label: value,
-          id: value,
-          type: "Block",
-        },
-      ])
-      setLoading(false)
-      return
-    }
-
     setLoading(true)
     try {
       const searchResults = await findByText(value, abortControllerRef.current.signal)
       setResults(searchResults)
     } catch (error: any) {
-      if (error.message !== 'Search cancelled') {
-        console.error('Search error:', error)
+      if (error.message !== "Search cancelled") {
+        console.error("Search error:", error)
         setResults([])
       }
     } finally {
@@ -216,10 +212,10 @@ const SearchBar = () => {
       sx={{
         width: {
           xs: "100%", // Full width on mobile
-          sm: 320,     // Smaller width on small tablets / landscape phones
-          md: 320,     // Even at md, keep it compact
-          lg: 400,     // Moderate width at lg
-          xl: 640,     // Default width on xl and above
+          sm: 320, // Smaller width on small tablets / landscape phones
+          md: 320, // Even at md, keep it compact
+          lg: 400, // Moderate width at lg
+          xl: 640, // Default width on xl and above
         },
         maxWidth: "100%", // Ensure we never exceed the viewport width
         position: "relative",
@@ -245,14 +241,14 @@ const SearchBar = () => {
           if (reason === "selectOption" && typeof newValue !== "string") {
             setInputValue("")
             setResults([])
-            
+
             // Special handling for ArNS management
             if (newValue.type === "ArNS") {
-              window.open(`https://arns.ar.io/#/manage/names/${newValue.id}`, '_blank')
+              window.open(`https://arns.ar.io/#/manage/names/${newValue.id}`, "_blank")
             } else {
               navigate(`/${TYPE_PATH_MAP[newValue.type]}/${newValue.id}`)
             }
-            
+
             document.getElementById("search-bar")?.blur()
           }
 
@@ -281,7 +277,7 @@ const SearchBar = () => {
         filterOptions={(x) => x}
         renderInput={(params) => (
           <TextField
-            placeholder="Search by Message ID / Process ID / User ID / Block Height / ArNS name"
+            placeholder="Search by ArNS name or AR.IO Message ID"
             sx={{
               background: "var(--mui-palette-background-default) !important",
               "& fieldset": {

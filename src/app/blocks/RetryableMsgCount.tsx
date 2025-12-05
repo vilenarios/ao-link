@@ -1,7 +1,8 @@
 import { Box, Link, Skeleton, Tooltip } from "@mui/material"
 import React, { useCallback, useEffect } from "react"
 
-import { getMessagesForBlock } from "@/services/messages-api"
+import { ARIO_PROCESS_ID } from "@/config/ario"
+import { getArioMessagesForBlock } from "@/services/messages-api"
 import { formatNumber } from "@/utils/number-utils"
 import { timeout } from "@/utils/utils"
 
@@ -19,7 +20,10 @@ export function RetryableMsgCount(props: RetryableMsgCountProps) {
   const fetchValue = useCallback(async () => {
     setLoading(true)
     setError("")
-    Promise.race([getMessagesForBlock(1, undefined, true, blockHeight), timeout(60_000)])
+    Promise.race([
+      getArioMessagesForBlock(ARIO_PROCESS_ID, 1, undefined, true, blockHeight),
+      timeout(60_000),
+    ])
       .then((value: any) => {
         setCount(value[0])
       })

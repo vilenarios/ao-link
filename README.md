@@ -1,13 +1,13 @@
-# AO Link
+# AR.IO Network Explorer
 
-AO Link is a web-based explorer and visualization tool for the AO protocol. It provides a user-friendly interface to explore processes, modules, messages, and other components of the AO ecosystem.
+AR.IO Network Explorer is a web-based explorer and visualization tool specifically for the AR.IO Network on Arweave. It provides a user-friendly interface to explore the AR.IO process, module, token, and ArNS (Arweave Name Service) records.
 
 ## Features
 
-- 🔍 Search and explore AO processes, modules, and messages
-- 📊 Visualize token distributions and process relationships
-- 🔗 Track message flows and process interactions
-- 💻 Interactive process console for read/write operations
+- 🔍 Search for AR.IO messages, ANT processes, and ArNS names
+- 📊 Visualize AR.IO token distributions
+- 🔗 Track AR.IO message flows and process interactions
+- 💻 Interactive console for read/write operations
 - 🎨 Dark/Light theme support
 - ⚡ Real-time data updates
 

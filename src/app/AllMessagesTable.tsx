@@ -1,7 +1,8 @@
 import React, { memo } from "react"
 
 import { EntityMessagesTable } from "@/app/entity/[slug]/EntityMessagesTable"
-import { getAllMessages } from "@/services/messages-api"
+import { ARIO_PROCESS_ID } from "@/config/ario"
+import { getArioMessages } from "@/services/messages-api"
 
 type EntityMessagesProps = {
   open: boolean
@@ -17,10 +18,12 @@ function BaseAllMessagesTable(props: EntityMessagesProps) {
 
   return (
     <EntityMessagesTable
+      entityId={ARIO_PROCESS_ID}
       allowTypeFilter
       pageSize={pageSize}
       fetchFunction={async (offset, ascending, sortField, lastRecord, extraFilters) => {
-        const [count, records] = await getAllMessages(
+        const [count, records] = await getArioMessages(
+          ARIO_PROCESS_ID,
           pageSize,
           lastRecord?.cursor,
           ascending,

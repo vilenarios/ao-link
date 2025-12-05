@@ -18,28 +18,32 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
-  ListItemIcon,
-  InputAdornment,
-  TextField,
 } from "@mui/material"
-import { Moon, Sun, List as MenuIcon, XCircle, MagnifyingGlass, ArrowLeft } from "@phosphor-icons/react"
-import { Link, useNavigate } from "react-router-dom"
+import {
+  Moon,
+  Sun,
+  List as MenuIcon,
+  XCircle,
+  MagnifyingGlass,
+  ArrowLeft,
+} from "@phosphor-icons/react"
 import { useState, useCallback } from "react" // Imported useCallback
+import { Link, useNavigate } from "react-router-dom"
 
 import { Logo } from "./Logo"
 import { MainFontFF } from "./RootLayout/fonts"
-import SearchBar from "@/app/SearchBar"
-import { usePrimaryArnsName } from "@/hooks/usePrimaryArnsName"
-import { useArnsLogo } from "@/hooks/useArnsLogo"
 import { theme } from "./RootLayout/theme" // Import theme for breakpoints
+import SearchBar from "@/app/SearchBar"
+import { useArnsLogo } from "@/hooks/useArnsLogo"
+import { usePrimaryArnsName } from "@/hooks/usePrimaryArnsName"
 
 const ProfileButton = () => {
   const activeAddress = useActiveAddress()
   const { data: arnsName, isLoading: isLoadingName } = usePrimaryArnsName(activeAddress || "")
-  const { data: logoTxId, isLoading: isLoadingLogo } = useArnsLogo(arnsName || "")
+  const { data: logoTxId } = useArnsLogo(arnsName || "")
 
   const handleProfileClick = () => {
-    const connectButton = document.getElementById('hidden-connect-button')
+    const connectButton = document.getElementById("hidden-connect-button")
     if (connectButton) {
       connectButton.click()
     }
@@ -69,7 +73,7 @@ const ProfileButton = () => {
 
   if (arnsName) {
     return (
-      <Box sx={{ position: 'relative' }}>
+      <Box sx={{ position: "relative" }}>
         <Button
           onClick={handleProfileClick}
           sx={{
@@ -118,7 +122,7 @@ const ProfileButton = () => {
           </Stack>
         </Button>
         {/* Hidden ConnectButton to trigger wallet modal */}
-        <Box sx={{ position: 'absolute', visibility: 'hidden', pointerEvents: 'none' }}>
+        <Box sx={{ position: "absolute", visibility: "hidden", pointerEvents: "none" }}>
           <ConnectButton
             id="hidden-connect-button"
             showBalance={false}
@@ -141,8 +145,9 @@ const ProfileButton = () => {
 }
 
 const navItems = [
-  { label: "PROCESSES", path: "/processes" },
-  { label: "MODULES", path: "/modules" },
+  { label: "PROCESS", path: "/process" },
+  { label: "MODULE", path: "/module" },
+  { label: "TOKEN", path: "/token" },
   { label: "BLOCKS", path: "/blocks" },
   { label: "ARNS", path: "/arns" },
 ]
@@ -161,15 +166,19 @@ const Header = () => {
     target: typeof window !== "undefined" ? window : undefined,
   })
 
-  const toggleDrawer = useCallback((open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-    if (
-      event.type === "keydown" &&
-      ((event as React.KeyboardEvent).key === "Tab" || (event as React.KeyboardEvent).key === "Shift")
-    ) {
-      return
-    }
-    setDrawerOpen(open)
-  }, [setDrawerOpen]) // Added setDrawerOpen to dependency array, though empty [] might also work if setDrawerOpen is guaranteed stable
+  const toggleDrawer = useCallback(
+    (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+      if (
+        event.type === "keydown" &&
+        ((event as React.KeyboardEvent).key === "Tab" ||
+          (event as React.KeyboardEvent).key === "Shift")
+      ) {
+        return
+      }
+      setDrawerOpen(open)
+    },
+    [setDrawerOpen],
+  ) // Added setDrawerOpen to dependency array, though empty [] might also work if setDrawerOpen is guaranteed stable
 
   const drawerContent = (
     <Box
@@ -215,7 +224,11 @@ const Header = () => {
           <Toolbar disableGutters>
             {isMobile && mobileSearchActive ? (
               <Stack direction="row" alignItems="center" sx={{ width: "100%" }}>
-                <IconButton onClick={() => setMobileSearchActive(false)} color="inherit" sx={{ mr: 1, color: 'var(--mui-palette-text-primary)' }}>
+                <IconButton
+                  onClick={() => setMobileSearchActive(false)}
+                  color="inherit"
+                  sx={{ mr: 1, color: "var(--mui-palette-text-primary)" }}
+                >
                   <ArrowLeft weight="bold" />
                 </IconButton>
                 <Box sx={{ flexGrow: 1 }}>
@@ -231,11 +244,15 @@ const Header = () => {
                 sx={{ width: "100%" }}
               >
                 <Stack direction="row" gap={{ xs: 1, sm: 2 }} alignItems="center">
-                  <Button component={Link} to="/" sx={{
-                    minWidth: { xs: 'auto', sm: '64px' }, // Allow button to shrink for logo only
-                    padding: { xs: 0.5, sm: '6px 8px' },
-                    marginLeft: { xs: 0, sm: -1 }
-                  }}>
+                  <Button
+                    component={Link}
+                    to="/"
+                    sx={{
+                      minWidth: { xs: "auto", sm: "64px" }, // Allow button to shrink for logo only
+                      padding: { xs: 0.5, sm: "6px 8px" },
+                      marginLeft: { xs: 0, sm: -1 },
+                    }}
+                  >
                     <Logo color="var(--mui-palette-text-primary)" />
                   </Button>
                   {!isMobile && (
@@ -261,7 +278,9 @@ const Header = () => {
                     </Stack>
                   )}
                 </Stack>
-                <Stack direction="row" gap={{ xs: 0.5, sm: 1 }} alignItems="center"> {/* Reduced gap for mobile icons */}
+                <Stack direction="row" gap={{ xs: 0.5, sm: 1 }} alignItems="center">
+                  {" "}
+                  {/* Reduced gap for mobile icons */}
                   {isLargeScreen && <SearchBar />}
                   {!isLargeScreen && (
                     <>
@@ -269,7 +288,7 @@ const Header = () => {
                         color="inherit"
                         aria-label="open search"
                         onClick={() => setMobileSearchActive(true)}
-                        sx={{ color: 'var(--mui-palette-text-primary)' }}
+                        sx={{ color: "var(--mui-palette-text-primary)" }}
                       >
                         <MagnifyingGlass weight="bold" />
                       </IconButton>
@@ -278,7 +297,7 @@ const Header = () => {
                         aria-label="open drawer"
                         edge="start"
                         onClick={toggleDrawer(true)}
-                        sx={{ display: { lg: "none" }, color: 'var(--mui-palette-text-primary)' }}
+                        sx={{ display: { lg: "none" }, color: "var(--mui-palette-text-primary)" }}
                       >
                         <MenuIcon weight="bold" />
                       </IconButton>
@@ -287,53 +306,53 @@ const Header = () => {
                   <Box
                     sx={{
                       height: 40,
-                      display: 'block',
-                    "&.MuiBox-root > button > div": {
-                      height: "fit-content",
-                      padding: 0,
-                    },
-                    "&.MuiBox-root button": {
-                      height: "100%",
-                      borderRadius: 1,
-                      border: "1px solid var(--mui-palette-divider)",
-                      paddingX: { xs: 1.5, sm: 2.5 },
-                      paddingY: 1,
-                      color: "var(--mui-palette-primary-main)",
-                      background: "none",
-                    },
-                    "&.MuiBox-root button:active": {
-                      transform: "scale(0.98) !important",
-                    },
-                    "& button:hover": {
-                      transform: "none !important",
-                      boxShadow: "none !important",
-                    },
-                    "& button > *": {
-                      fontWeight: 500,
-                      fontFamily: MainFontFF,
-                      textTransform: "none",
-                      lineHeight: 1,
-                      fontSize: "0.8125rem",
-                      padding: 0,
-                    },
-                    "& button svg": {
-                      marginY: -1,
-                    },
-                  }}
-                >
-                  <ProfileButton />
-                </Box>
-                {/* Minimal IconButton for testing TS1005 error */}
-                <IconButton
-                  onClick={() => {
-                    const nextMode = mode === "dark" ? "light" : "dark";
-                    setMode(nextMode);
-                  }} // Added back original onClick logic
-                  size="large"
-                  sx={{ fontSize: "1.125rem" }}
-                >
-                  {mode === "dark" ? <Moon weight="bold" /> : <Sun weight="bold" />}
-                </IconButton>
+                      display: "block",
+                      "&.MuiBox-root > button > div": {
+                        height: "fit-content",
+                        padding: 0,
+                      },
+                      "&.MuiBox-root button": {
+                        height: "100%",
+                        borderRadius: 1,
+                        border: "1px solid var(--mui-palette-divider)",
+                        paddingX: { xs: 1.5, sm: 2.5 },
+                        paddingY: 1,
+                        color: "var(--mui-palette-primary-main)",
+                        background: "none",
+                      },
+                      "&.MuiBox-root button:active": {
+                        transform: "scale(0.98) !important",
+                      },
+                      "& button:hover": {
+                        transform: "none !important",
+                        boxShadow: "none !important",
+                      },
+                      "& button > *": {
+                        fontWeight: 500,
+                        fontFamily: MainFontFF,
+                        textTransform: "none",
+                        lineHeight: 1,
+                        fontSize: "0.8125rem",
+                        padding: 0,
+                      },
+                      "& button svg": {
+                        marginY: -1,
+                      },
+                    }}
+                  >
+                    <ProfileButton />
+                  </Box>
+                  {/* Minimal IconButton for testing TS1005 error */}
+                  <IconButton
+                    onClick={() => {
+                      const nextMode = mode === "dark" ? "light" : "dark"
+                      setMode(nextMode)
+                    }} // Added back original onClick logic
+                    size="large"
+                    sx={{ fontSize: "1.125rem" }}
+                  >
+                    {mode === "dark" ? <Moon weight="bold" /> : <Sun weight="bold" />}
+                  </IconButton>
                 </Stack>
               </Stack>
             )}

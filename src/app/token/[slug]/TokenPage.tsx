@@ -13,17 +13,19 @@ import {
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2"
 import { ArrowSquareOut } from "@phosphor-icons/react"
 import React, { useEffect, useMemo, useState } from "react"
-import { useParams, useSearchParams } from "react-router-dom"
-import PageWrapper from "@/components/PageWrapper"
+import { Navigate, useParams, useSearchParams } from "react-router-dom"
 
 import { TokenHolderChart } from "./TokenHolderChart"
+
 import { TokenHolderTable } from "./TokenHolderTable"
+import ErrorView from "@/components/ErrorView"
 import { IdBlock } from "@/components/IdBlock"
 import PageSkeleton from "@/components/PageSkeleton"
-import ErrorView from "@/components/ErrorView"
+import PageWrapper from "@/components/PageWrapper"
 import { SectionInfo } from "@/components/SectionInfo"
 import { Subheading } from "@/components/Subheading"
 import { TokenAmountBlock } from "@/components/TokenAmountBlock"
+import { ARIO_TOKEN_ID } from "@/config/ario"
 import { useTokenInfo } from "@/hooks/useTokenInfo"
 import { TokenHolder, getTokenHolders } from "@/services/token-api"
 import { isArweaveId } from "@/utils/utils"
@@ -33,7 +35,13 @@ const defaultTab = "table"
 export default function TokenPage() {
   const { tokenId } = useParams()
 
-  const tokenInfo = useTokenInfo(tokenId)
+  // Always call hooks unconditionally (React rules of hooks)
+  const tokenInfo = useTokenInfo(tokenId === ARIO_TOKEN_ID ? tokenId : undefined)
+
+  // Redirect to AR.IO token if a different token is requested
+  if (tokenId && tokenId !== ARIO_TOKEN_ID) {
+    return <Navigate to={`/token/${ARIO_TOKEN_ID}`} replace />
+  }
 
   const [tokenHolders, setTokenHolders] = useState<TokenHolder[]>()
 
