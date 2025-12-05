@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-AR.IO Network Explorer is a web-based explorer specifically for the AR.IO Network on Arweave. It allows users to search and explore AR.IO process messages, the AR.IO module, AR.IO token, and ArNS (Arweave Name Service) records.
+AR.IO Scan is a web-based explorer specifically for the AR.IO Network on Arweave. It allows users to search and explore AR.IO process messages, the AR.IO module, AR.IO token, and ArNS (Arweave Name Service) records.
 
 **Note:** This project is archived and no longer actively maintained.
 

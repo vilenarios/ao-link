@@ -1,6 +1,6 @@
-# AR.IO Network Explorer
+# AR.IO Scan
 
-AR.IO Network Explorer is a web-based explorer and visualization tool specifically for the AR.IO Network on Arweave. It provides a user-friendly interface to explore the AR.IO process, module, token, and ArNS (Arweave Name Service) records.
+AR.IO Scan is a web-based explorer and visualization tool specifically for the AR.IO Network on Arweave. It provides a user-friendly interface to explore the AR.IO process, module, token, and ArNS (Arweave Name Service) records.
 
 ## Features
 

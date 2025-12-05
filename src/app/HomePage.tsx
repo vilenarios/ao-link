@@ -11,7 +11,7 @@ import { Subheading } from "@/components/Subheading"
 function HomePageContent() {
   return (
     <Stack component="main" gap={2} sx={{ paddingY: { xs: 2, sm: 3 } }}>
-      <Subheading type="AR.IO Network Messages" />
+      <Subheading type="Latest AR.IO Network Messages" />
       <Box sx={{ marginX: { xs: 0, sm: -2 } }}>
         <AllMessagesTable open />
       </Box>

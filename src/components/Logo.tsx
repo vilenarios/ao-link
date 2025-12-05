@@ -14,7 +14,7 @@ export function Logo({ height = 28 }: LogoProps) {
   return (
     <img
       src={logoSrc}
-      alt="AR.IO Network Explorer"
+      alt="AR.IO Scan"
       style={{
         display: "block",
         height: `${height}px`,

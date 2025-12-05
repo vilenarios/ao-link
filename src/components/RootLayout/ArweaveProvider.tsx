@@ -14,7 +14,7 @@ export function ArweaveProvider({ children }: { children: React.ReactNode }) {
         ensurePermissions: true,
         strategies: [new WanderStrategy(), new AoSyncStrategy()],
         appInfo: {
-          name: "AR.IO Network Explorer",
+          name: "AR.IO Scan",
         },
       }}
       theme={{
