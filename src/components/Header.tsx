@@ -158,7 +158,7 @@ const Header = () => {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [mobileSearchActive, setMobileSearchActive] = useState(false) // State for mobile search visibility
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
-  const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"))
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"))
 
   const elevated = useScrollTrigger({
     disableHysteresis: true,

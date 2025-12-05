@@ -1,6 +1,7 @@
 // @ts-ignore - AR-IO SDK types may not be fully resolved
-import { ARIO } from '@ar.io/sdk/web'
-import { arnsRequestThrottler, retryWithBackoff } from './request-throttle'
+import { ARIO } from "@ar.io/sdk/web"
+
+import { arnsRequestThrottler, retryWithBackoff } from "./request-throttle"
 
 // Initialize AR-IO client for mainnet
 const ario = ARIO.mainnet()
@@ -11,7 +12,7 @@ export interface ArNSRecord {
   processId: string
   startTimestamp: number
   endTimestamp?: number
-  type: 'lease' | 'permabuy'
+  type: "lease" | "permabuy"
   purchasePrice?: number
   undernameLimit: number
 }
@@ -22,7 +23,7 @@ export interface ArNSRecordsPage {
   nextCursor?: string
   totalItems: number
   sortBy: string
-  sortOrder: 'asc' | 'desc'
+  sortOrder: "asc" | "desc"
 }
 
 export interface ArNSNameResolution {
@@ -51,10 +52,10 @@ export async function getArNSRecords({
         ario.getArNSRecords({
           limit,
           cursor,
-          sortBy: 'startTimestamp',
-          sortOrder: 'desc',
-        })
-      )
+          sortBy: "startTimestamp",
+          sortOrder: "desc",
+        }),
+      ),
     )
 
     return {
@@ -63,7 +64,7 @@ export async function getArNSRecords({
         processId: item.processId,
         startTimestamp: item.startTimestamp,
         endTimestamp: item.endTimestamp,
-        type: item.type as 'lease' | 'permabuy',
+        type: item.type as "lease" | "permabuy",
         purchasePrice: item.purchasePrice,
         undernameLimit: item.undernameLimit,
       })),
@@ -74,7 +75,7 @@ export async function getArNSRecords({
       sortOrder: (response as any).sortOrder,
     }
   } catch (error) {
-    console.error('Error fetching ArNS records:', error)
+    console.error("Error fetching ArNS records:", error)
     throw error
   }
 }
@@ -90,7 +91,7 @@ export async function getArNSRecord(name: string): Promise<ArNSRecord | null> {
       processId: record.processId,
       startTimestamp: record.startTimestamp,
       endTimestamp: record.endTimestamp,
-      type: record.type as 'lease' | 'permabuy',
+      type: record.type as "lease" | "permabuy",
       undernameLimit: record.undernameLimit,
     }
   } catch (error) {
@@ -105,9 +106,7 @@ export async function getArNSRecord(name: string): Promise<ArNSRecord | null> {
 export async function resolveArNSName(name: string): Promise<ArNSNameResolution | null> {
   try {
     const resolution = await arnsRequestThrottler.throttle(() =>
-      retryWithBackoff(() =>
-        ario.resolveArNSName({ name })
-      )
+      retryWithBackoff(() => ario.resolveArNSName({ name })),
     )
     return resolution as ArNSNameResolution | null
   } catch (error) {
@@ -120,15 +119,15 @@ export async function resolveArNSName(name: string): Promise<ArNSNameResolution 
  * Get all ArNS records (for migration compatibility)
  * Note: This method fetches all records by paginating through all pages
  */
-export async function getAllArNSRecords(): Promise<Record<string, Omit<ArNSRecord, 'name'>>> {
+export async function getAllArNSRecords(): Promise<Record<string, Omit<ArNSRecord, "name">>> {
   try {
-    const allRecords: Record<string, Omit<ArNSRecord, 'name'>> = {}
+    const allRecords: Record<string, Omit<ArNSRecord, "name">> = {}
     let hasMore = true
     let cursor: string | undefined
 
     while (hasMore) {
       const page = await getArNSRecords({ limit: 1000, cursor })
-      
+
       for (const record of page.items) {
         allRecords[record.name] = {
           processId: record.processId,
@@ -146,7 +145,7 @@ export async function getAllArNSRecords(): Promise<Record<string, Omit<ArNSRecor
 
     return allRecords
   } catch (error) {
-    console.error('Error fetching all ArNS records:', error)
+    console.error("Error fetching all ArNS records:", error)
     throw error
   }
 }
@@ -171,9 +170,7 @@ export async function resolveArns(name: string): Promise<string | null> {
 export async function getPrimaryName(address: string): Promise<string | null> {
   try {
     const primaryName = await arnsRequestThrottler.throttle(() =>
-      retryWithBackoff(() =>
-        ario.getPrimaryName({ address })
-      )
+      retryWithBackoff(() => ario.getPrimaryName({ address })),
     )
     return (primaryName as any)?.name || null
   } catch (error) {
@@ -184,15 +181,15 @@ export async function getPrimaryName(address: string): Promise<string | null> {
 
 /**
  * Get all ArNS records owned by a specific address
- * TODO: This is currently commented out due to inefficiency. 
+ * TODO: This is currently commented out due to inefficiency.
  * We need to wait for the AR-IO SDK to provide a proper owner filter.
  * Current implementation fetches ALL records and resolves each one individually,
  * which causes excessive API calls.
  */
 export async function getArNSRecordsByOwner(ownerAddress: string): Promise<ArNSRecord[]> {
-  console.warn('getArNSRecordsByOwner is disabled - waiting for AR-IO SDK owner filter support')
+  console.warn("getArNSRecordsByOwner is disabled - waiting for AR-IO SDK owner filter support")
   return []
-  
+
   // Commented out inefficient implementation:
   /*
   try {
@@ -253,9 +250,9 @@ export async function getArNSRecordsByOwner(ownerAddress: string): Promise<ArNSR
 export async function getOwnedDomains(entityId: string): Promise<string[]> {
   try {
     const records = await getArNSRecordsByOwner(entityId)
-    return records.map(record => record.name)
+    return records.map((record) => record.name)
   } catch (error) {
-    console.error('Error fetching owned domains:', error)
+    console.error("Error fetching owned domains:", error)
     return []
   }
 }
@@ -271,7 +268,7 @@ export async function getArNSLogo(name: string): Promise<string | null> {
     }
 
     // Query the ANT process to get its state which includes the logo
-    const response = await fetch(`https://cu.ao-testnet.xyz/dry-run?process-id=${record.processId}`, {
+    const response = await fetch(`https://cu.ardrive.io/dry-run?process-id=${record.processId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -284,7 +281,7 @@ export async function getArNSLogo(name: string): Promise<string | null> {
     })
 
     const result = await response.json()
-    
+
     if ("error" in result) {
       throw new Error(result.error)
     }
