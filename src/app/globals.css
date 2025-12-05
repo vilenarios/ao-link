@@ -31,11 +31,11 @@ html[data-mui-color-scheme="dark"] :root {
 }
 
 html[data-mui-color-scheme="dark"] .separator {
-  border-right: 0.25px solid #FFF;
+  border-right: 0.25px solid #fff;
 }
 
 .table-headers {
-  color: #9EA2AA;
+  color: #9ea2aa;
   font-size: 12px;
   font-weight: 400;
   line-height: normal;
@@ -51,7 +51,7 @@ html[data-mui-color-scheme="dark"] .separator {
 }
 
 .table-row:hover {
-  background-color: #DDD;
+  background-color: #ddd;
 }
 
 html[data-mui-color-scheme="dark"] .table-row:hover {
@@ -60,7 +60,7 @@ html[data-mui-color-scheme="dark"] .table-row:hover {
 
 .chart-label {
   color: #222326;
-  font-family: "Roboto Mono";
+  font-family: "Rubik", sans-serif;
   font-size: 12px;
   font-weight: 400;
   line-height: normal;
@@ -68,13 +68,11 @@ html[data-mui-color-scheme="dark"] .table-row:hover {
   text-transform: uppercase;
 }
 
-
 .loader {
   animation: bounce 2s infinite;
 }
 
 @keyframes bounce {
-
   0%,
   100% {
     transform: translateY(-200%);
