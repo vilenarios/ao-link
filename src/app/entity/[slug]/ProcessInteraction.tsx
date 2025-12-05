@@ -1,20 +1,20 @@
-import React, { useCallback, useState } from "react"
 import { useActiveAddress } from "@arweave-wallet-kit/react"
 import { Box, Button, CircularProgress, Paper, Stack, Typography } from "@mui/material"
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2"
-import { createDataItemSigner, dryrun, message, result } from "@permaweb/aoconnect"
+import { createDataItemSigner } from "@permaweb/aoconnect"
 import { DryRunResult, MessageInput } from "@permaweb/aoconnect/dist/lib/dryrun"
 import { MessageResult } from "@permaweb/aoconnect/dist/lib/result"
 import { Asterisk } from "@phosphor-icons/react"
+import React, { useCallback, useState } from "react"
 
 import { CodeEditor } from "@/components/CodeEditor"
 import { FormattedDataBlock } from "@/components/FormattedDataBlock"
 import { IdBlock } from "@/components/IdBlock"
+import { RequestHistoryPanel, addToDryRunHistory } from "@/components/RequestHistoryPanel"
 import { MonoFontFF } from "@/components/RootLayout/fonts"
+import { arIoCu } from "@/services/arns-api"
 import { prettifyResult } from "@/utils/ao-utils"
 import { truncateId } from "@/utils/data-utils"
-
-import { RequestHistoryPanel, dryRunHistoryStore, addToDryRunHistory } from "@/components/RequestHistoryPanel"
 
 type ProcessInteractionProps = {
   processId: string
@@ -48,7 +48,7 @@ export function ProcessInteraction(props: ProcessInteractionProps) {
       let json: DryRunResult | MessageResult
 
       if (readOnly) {
-        json = await dryrun(msg)
+        json = await arIoCu.dryrun(msg)
 
         const newItem = {
           id: crypto.randomUUID(),
@@ -60,11 +60,11 @@ export function ProcessInteraction(props: ProcessInteractionProps) {
 
         addToDryRunHistory(newItem)
       } else {
-        const sentMsgId = await message({
+        const sentMsgId = await arIoCu.message({
           ...msg,
           signer: createDataItemSigner(window.arweaveWallet),
         })
-        json = await result({ message: sentMsgId, process: processId })
+        json = await arIoCu.result({ message: sentMsgId, process: processId })
         setMsgId(sentMsgId)
 
         const newItem = {
@@ -81,9 +81,7 @@ export function ProcessInteraction(props: ProcessInteractionProps) {
 
       setResponse(JSON.stringify(prettifyResult(json), null, 2))
     } catch (error) {
-      setResponse(
-        JSON.stringify({ error: `Error fetching info: ${String(error)}` }, null, 2),
-      )
+      setResponse(JSON.stringify({ error: `Error fetching info: ${String(error)}` }, null, 2))
     }
     setLoading(false)
   }, [processId, query, readOnly])

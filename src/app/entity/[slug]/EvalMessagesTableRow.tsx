@@ -1,6 +1,5 @@
 import { Box, Collapse, IconButton, Paper, TableCell, TableRow, Tooltip } from "@mui/material"
 
-import { result } from "@permaweb/aoconnect"
 import { CaretDown, CaretRight, CheckCircle, MinusCircle, Question } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
 
@@ -8,11 +7,12 @@ import { EntityBlock } from "@/components/EntityBlock"
 import { FormattedDataBlock } from "@/components/FormattedDataBlock"
 import { IdBlock } from "@/components/IdBlock"
 import { TypeBadge } from "@/components/TypeBadge"
+import { GATEWAY_DATA } from "@/config/gateway"
+import { arIoCu } from "@/services/arns-api"
 import { AoMessage } from "@/types"
 import { truncateId } from "@/utils/data-utils"
 import { formatFullDate, formatRelative } from "@/utils/date-utils"
 import { formatNumber, formatSize } from "@/utils/number-utils"
-import { GATEWAY_DATA } from "@/config/gateway"
 
 type EvalMessagesTableRowProps = {
   item: AoMessage
@@ -50,7 +50,8 @@ export function EvalMessagesTableRow(props: EvalMessagesTableRowProps) {
   useEffect(() => {
     if (!message) return
 
-    result({ message: message.id, process: message.to })
+    arIoCu
+      .result({ message: message.id, process: message.to })
       .then((res) => {
         setSuccess(typeof res?.Output?.data === "object")
       })

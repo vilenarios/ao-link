@@ -12,7 +12,6 @@ import { SpawnedProcesses } from "./SpawnedProcesses"
 import { TokenBalances } from "./TokenBalances"
 import { TokenTransfers } from "./TokenTransfers"
 import { BalanceSection } from "@/components/BalanceSection"
-import { EntityBlock } from "@/components/EntityBlock"
 import { ChartDataItem, Graph } from "@/components/Graph"
 import { IdBlock } from "@/components/IdBlock"
 import { OwnerBlock } from "@/components/OwnerBlock"
@@ -81,7 +80,7 @@ export function ProcessPage(props: ProcessPageProps) {
 
     Promise.all(entityIds.map(getMessageById)).then((entitiesArray) => {
       const newEntities = Object.fromEntries(
-        entitiesArray.filter((x): x is AoMessage => x !== undefined).map((x) => [x.id, x]),
+        entitiesArray.filter((x): x is AoMessage => x != null).map((x) => [x.id, x]),
       )
 
       setEntities((prev) => ({ ...prev, ...newEntities }))
@@ -123,14 +122,16 @@ export function ProcessPage(props: ProcessPageProps) {
       <Grid2 container spacing={{ xs: 2, lg: 12 }}>
         <Grid2 xs={12} lg={6}>
           <Stack gap={{ xs: 2, sm: 4 }}>
-            <Paper sx={{
-              height: { xs: 300, sm: 400, md: 428 },
-              width: '100%', // Make width responsive
-              maxWidth: { md: 428 }, // Optional: constrain max width on larger screens if desired
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}>
+            <Paper
+              sx={{
+                height: { xs: 300, sm: 400, md: 428 },
+                width: "100%", // Make width responsive
+                maxWidth: { md: 428 }, // Optional: constrain max width on larger screens if desired
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               {graphData === null ? (
                 <Stack justifyContent="center" alignItems="center" sx={{ height: "100%" }}>
                   <CircularProgress size={24} color="primary" />
@@ -201,7 +202,9 @@ export function ProcessPage(props: ProcessPageProps) {
           <TabWithCount value="write" label="Write" />
           <TabWithCount value="source-code" label="Source Code" chipValue={evalCount} />
         </Tabs>
-        <Box sx={{ marginX: { xs: 0, sm: -2 } }}> {/* Adjust negative margin for mobile */}
+        <Box sx={{ marginX: { xs: 0, sm: -2 } }}>
+          {" "}
+          {/* Adjust negative margin for mobile */}
           <OutgoingMessagesTable
             entityId={entityId}
             open={activeTab === "outgoing"}
