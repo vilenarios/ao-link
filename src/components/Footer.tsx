@@ -34,7 +34,8 @@ export function Footer() {
         >
           <Stack direction="row" gap={1.5} alignItems="center" sx={{ color: "#D4D5D9" }}>
             <Link
-              href="/"
+              href="https://ar.io"
+              target="_blank"
               sx={{
                 color: "rgb(180, 180, 180)",
                 "&:hover": {
