@@ -212,10 +212,10 @@ const SearchBar = () => {
       sx={{
         width: {
           xs: "100%", // Full width on mobile
-          sm: 320, // Smaller width on small tablets / landscape phones
-          md: 320, // Even at md, keep it compact
-          lg: 400, // Moderate width at lg
-          xl: 640, // Default width on xl and above
+          sm: 400, // Small tablets / landscape phones
+          md: 480, // Tablets
+          lg: 560, // Laptop
+          xl: 720, // Large desktop
         },
         maxWidth: "100%", // Ensure we never exceed the viewport width
         position: "relative",
@@ -277,7 +277,7 @@ const SearchBar = () => {
         filterOptions={(x) => x}
         renderInput={(params) => (
           <TextField
-            placeholder="Search by ArNS name or AR.IO Message ID"
+            placeholder="Search by ArNS name, AR.IO Message ID or ANT Process ID"
             sx={{
               background: "var(--mui-palette-background-default) !important",
               "& fieldset": {
