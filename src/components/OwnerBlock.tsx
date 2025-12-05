@@ -2,9 +2,8 @@ import { Box, Stack } from "@mui/material"
 import { useNavigate } from "react-router-dom"
 
 import { EntityBlock } from "./EntityBlock"
-import { MainFontFF } from "./RootLayout/fonts"
-import { usePrimaryArnsName } from "@/hooks/usePrimaryArnsName"
 import { useArnsLogo } from "@/hooks/useArnsLogo"
+import { usePrimaryArnsName } from "@/hooks/usePrimaryArnsName"
 
 type OwnerBlockProps = {
   ownerId: string
@@ -17,8 +16,8 @@ type OwnerBlockProps = {
 export function OwnerBlock(props: OwnerBlockProps) {
   const { ownerId } = props
   const navigate = useNavigate()
-  
-  const { data: primaryName, isLoading } = usePrimaryArnsName(ownerId)
+
+  const { data: primaryName } = usePrimaryArnsName(ownerId)
   const { data: logoTxId } = useArnsLogo(primaryName || "")
 
   const handleArnsClick = () => {
@@ -29,9 +28,9 @@ export function OwnerBlock(props: OwnerBlockProps) {
     <Stack direction="row" alignItems="center" gap={1}>
       <EntityBlock entityId={ownerId} />
       {primaryName && (
-        <Stack 
-          direction="row" 
-          alignItems="center" 
+        <Stack
+          direction="row"
+          alignItems="center"
           gap={0.5}
           onClick={handleArnsClick}
           sx={{
@@ -58,11 +57,13 @@ export function OwnerBlock(props: OwnerBlockProps) {
               }}
             />
           )}
-          <span style={{ 
-            fontFamily: "monospace",
-            fontSize: "0.875rem",
-            color: "inherit"
-          }}>
+          <span
+            style={{
+              fontFamily: "monospace",
+              fontSize: "0.875rem",
+              color: "inherit",
+            }}
+          >
             {primaryName}
           </span>
         </Stack>

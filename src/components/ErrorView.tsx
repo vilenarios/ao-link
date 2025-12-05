@@ -20,4 +20,4 @@ export default function ErrorView({ message = "Something went wrong.", onRetry }
       </Alert>
     </Stack>
   )
-} 
+}

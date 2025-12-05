@@ -1,11 +1,12 @@
-import React, { Suspense, lazy, useState } from "react"
 import { Box, CircularProgress, Tabs } from "@mui/material"
-import { TabWithCount } from "@/components/TabWithCount"
-import { AoMessage } from "@/types"
+import React, { Suspense, lazy, useState } from "react"
+
 import { CombinedMessagesTable } from "./CombinedMessagesTable"
-import { MessageData } from "./MessageData"
 import { ComputeResult } from "./ComputeResult"
+import { MessageData } from "./MessageData"
+import { TabWithCount } from "@/components/TabWithCount"
 import { TagsSection } from "@/components/TagsSection"
+import { AoMessage } from "@/types"
 
 const GraphTab = lazy(() => import("@/components/Graph").then((m) => ({ default: m.Graph })))
 
@@ -19,14 +20,7 @@ interface Props {
 }
 
 export default function TransactionDetailsTabs(props: Props) {
-  const {
-    message,
-    pushedFor,
-    computeResult,
-    totalCount,
-    onCount,
-    onGraphData,
-  } = props
+  const { message, computeResult, onCount, onGraphData } = props
 
   const [tab, setTab] = useState("messages")
   const [localCount, setLocalCount] = useState<number>()
@@ -86,4 +80,4 @@ export default function TransactionDetailsTabs(props: Props) {
       )}
     </Box>
   )
-} 
+}

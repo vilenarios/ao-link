@@ -9,4 +9,4 @@ export default function PageSkeleton() {
       <Skeleton variant="rectangular" height={300} />
     </Stack>
   )
-} 
+}

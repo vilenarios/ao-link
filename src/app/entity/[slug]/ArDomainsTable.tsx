@@ -1,4 +1,15 @@
-import { IconButton, Paper, Stack, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, Chip } from "@mui/material"
+import {
+  IconButton,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Tooltip,
+  Chip,
+} from "@mui/material"
 import { ArrowUpRight, Globe, Info } from "@phosphor-icons/react"
 import React, { memo } from "react"
 
@@ -54,11 +65,7 @@ function BaseArDomainsTable(props: ArDomainsTableProps) {
         <TableHead>
           <TableRow>
             {headerCells.map((cell, index) => (
-              <TableCell 
-                key={index} 
-                sx={cell.sx} 
-                align={cell.align}
-              >
+              <TableCell key={index} sx={cell.sx} align={cell.align}>
                 {cell.label}
               </TableCell>
             ))}
@@ -80,16 +87,18 @@ function BaseArDomainsTable(props: ArDomainsTableProps) {
           ) : (
             records.map((record) => {
               const registrationDate = new Date(record.startTimestamp * 1000)
-              const expirationDate = record.endTimestamp ? new Date(record.endTimestamp * 1000) : null
+              const expirationDate = record.endTimestamp
+                ? new Date(record.endTimestamp * 1000)
+                : null
               const isExpired = expirationDate && expirationDate < new Date()
-              
+
               return (
                 <TableRow key={record.name}>
                   <TableCell>
                     <Stack direction="row" alignItems="center" gap={1}>
-                      <IconButton 
-                        size="small" 
-                        href={`https://${record.name}.ar.io`} 
+                      <IconButton
+                        size="small"
+                        href={`https://${record.name}.ar.io`}
                         target="_blank"
                         title={`Visit ${record.name}.ar.io`}
                       >
@@ -99,48 +108,46 @@ function BaseArDomainsTable(props: ArDomainsTableProps) {
                     </Stack>
                   </TableCell>
                   <TableCell>
-                    <Chip 
-                      label={record.type === 'permabuy' ? 'Permanent' : 'Lease'} 
+                    <Chip
+                      label={record.type === "permabuy" ? "Permanent" : "Lease"}
                       size="small"
-                      color={record.type === 'permabuy' ? 'success' : 'primary'}
+                      color={record.type === "permabuy" ? "success" : "primary"}
                       variant="outlined"
                     />
                   </TableCell>
                   <TableCell>
-                    <IdBlock 
-                      label={truncateId(record.processId)} 
-                      value={record.processId} 
-                      href={`/entity/${record.processId}`} 
+                    <IdBlock
+                      label={truncateId(record.processId)}
+                      value={record.processId}
+                      href={`/entity/${record.processId}`}
                     />
                   </TableCell>
-                  <TableCell align="center">
-                    {record.undernameLimit}
-                  </TableCell>
+                  <TableCell align="center">{record.undernameLimit}</TableCell>
                   <TableCell align="right">
                     <Tooltip title={formatFullDate(registrationDate)}>
                       <span>{formatRelative(registrationDate)}</span>
                     </Tooltip>
                   </TableCell>
                   <TableCell align="right">
-                    {record.type === 'permabuy' ? (
+                    {record.type === "permabuy" ? (
                       <Chip label="Never" size="small" color="success" variant="outlined" />
                     ) : expirationDate ? (
                       <Tooltip title={formatFullDate(expirationDate)}>
-                        <Chip 
-                          label={formatRelative(expirationDate)} 
-                          size="small" 
-                          color={isExpired ? 'error' : 'default'}
+                        <Chip
+                          label={formatRelative(expirationDate)}
+                          size="small"
+                          color={isExpired ? "error" : "default"}
                           variant="outlined"
                         />
                       </Tooltip>
                     ) : (
-                      'Unknown'
+                      "Unknown"
                     )}
                   </TableCell>
                   <TableCell align="center">
-                    <IconButton 
-                      size="small" 
-                      href={`https://arns.ar.io/#/manage/names/${record.name}`} 
+                    <IconButton
+                      size="small"
+                      href={`https://arns.ar.io/#/manage/names/${record.name}`}
                       target="_blank"
                       title="Manage on ArNS.ar.io"
                     >

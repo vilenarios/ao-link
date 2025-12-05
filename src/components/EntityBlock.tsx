@@ -32,13 +32,7 @@ export function EntityBlock(props: EntityBlockProps) {
         </Fade>
       )}
       <IdBlock
-        label={
-          entityName
-            ? entityName
-            : fullId
-              ? entityId
-              : truncateId(entityId)
-        }
+        label={entityName ? entityName : fullId ? entityId : truncateId(entityId)}
         value={entityId}
         href={`/entity/${entityId}`}
       />

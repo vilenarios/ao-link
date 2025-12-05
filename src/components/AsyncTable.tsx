@@ -115,7 +115,6 @@ export function AsyncTable(props: AsyncTableProps) {
     }
 
     return () => observer.disconnect()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, endReached, pageSize, sortAscending, sortField, extraFilters])
 
   useEffect(() => {
@@ -148,74 +147,71 @@ export function AsyncTable(props: AsyncTableProps) {
         >
           <TableHead>
             <TableRow hover={false}>
-            {headerCells.map((cell, index) => (
-              <TableCell
-                key={index}
-                align={cell.align}
-                sx={{
-                  color: "#9ea2aa",
-                  whiteSpace: "nowrap",
-                  ...(cell.sx || {}),
-                }}
-              >
-                {cell.sortable ? (
-                  <TableSortLabel
-                    active={sortField === cell.field}
-                    direction={sortAscending ? "asc" : "desc"}
-                    onClick={() => {
-                      if (sortField !== cell.field) {
-                        setSortField(cell.field as string)
-                      } else {
-                        setSortAscending(!sortAscending)
-                      }
-                    }}
-                  >
-                    {cell.label}
-                  </TableSortLabel>
-                ) : (
-                  cell.label
-                )}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {virtualize && data.length > pageSize * 100 ? (
-            <VirtualRows
-              data={data}
-              rowRenderer={renderRow}
-              rowHeight={44}
-            />
-          ) : (
-            <>
-              <TableRow hover={false}>
-                <TableCell colSpan={99} sx={{ padding: 0, border: 0 }}>
-                  {loading ? (
-                    <LinearProgress color="primary" variant="indeterminate" sx={{ height: 2 }} />
+              {headerCells.map((cell, index) => (
+                <TableCell
+                  key={index}
+                  align={cell.align}
+                  sx={{
+                    color: "#9ea2aa",
+                    whiteSpace: "nowrap",
+                    ...(cell.sx || {}),
+                  }}
+                >
+                  {cell.sortable ? (
+                    <TableSortLabel
+                      active={sortField === cell.field}
+                      direction={sortAscending ? "asc" : "desc"}
+                      onClick={() => {
+                        if (sortField !== cell.field) {
+                          setSortField(cell.field as string)
+                        } else {
+                          setSortAscending(!sortAscending)
+                        }
+                      }}
+                    >
+                      {cell.label}
+                    </TableSortLabel>
                   ) : (
-                    <Box sx={{ height: 2 }} />
+                    cell.label
                   )}
                 </TableCell>
-              </TableRow>
-              {data.map((row, index) => (
-                <ErrorBoundary key={row.id} fallback={<>Something went wrong</>}>
-                  {renderRow(row, index)}
-                </ErrorBoundary>
               ))}
-              {data.length === 0 && endReached && (
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {virtualize && data.length > pageSize * 100 ? (
+              <VirtualRows data={data} rowRenderer={renderRow} rowHeight={44} />
+            ) : (
+              <>
                 <TableRow hover={false}>
-                  <TableCell colSpan={99} sx={{ padding: 2 }}>
-                    <Typography variant="body2" color="text.secondary">
-                      No data available.
-                    </Typography>
+                  <TableCell colSpan={99} sx={{ padding: 0, border: 0 }}>
+                    {loading ? (
+                      <LinearProgress color="primary" variant="indeterminate" sx={{ height: 2 }} />
+                    ) : (
+                      <Box sx={{ height: 2 }} />
+                    )}
                   </TableCell>
                 </TableRow>
-              )}
-            </>
-          )}
-        </TableBody>
-      </Table>
-      </Box> {/* Close the Box component that wraps the Table */}
+                {data.map((row, index) => (
+                  <ErrorBoundary key={row.id} fallback={<>Something went wrong</>}>
+                    {renderRow(row, index)}
+                  </ErrorBoundary>
+                ))}
+                {data.length === 0 && endReached && (
+                  <TableRow hover={false}>
+                    <TableCell colSpan={99} sx={{ padding: 2 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        No data available.
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </>
+            )}
+          </TableBody>
+        </Table>
+      </Box>{" "}
+      {/* Close the Box component that wraps the Table */}
       {!endReached && data.length > 0 && (
         <Stack
           paddingY={1.5}

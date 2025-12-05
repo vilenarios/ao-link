@@ -1,11 +1,11 @@
-import { Box, IconButton, Link, Stack, TableCell, TableRow, Typography } from "@mui/material"
+import { IconButton, Link, Stack, TableCell, TableRow, Typography } from "@mui/material"
 import { ArrowUpRight } from "@phosphor-icons/react"
 
 import { IdBlock } from "@/components/IdBlock"
 import { MonoFontFF } from "@/components/RootLayout/fonts"
 import { ArNSRecord } from "@/services/arns-service"
-import { formatRelative } from "@/utils/date-utils"
 import { truncateId } from "@/utils/data-utils"
+import { formatRelative } from "@/utils/date-utils"
 
 type ArnsTableRowProps = {
   record: ArNSRecord
@@ -24,7 +24,7 @@ export function ArnsTableRow(props: ArnsTableRowProps) {
             href={`https://${record.name}.ar.io`}
             target="_blank"
             rel="noopener noreferrer"
-            sx={{ color: 'text.secondary' }}
+            sx={{ color: "text.secondary" }}
           >
             <ArrowUpRight size={16} />
           </IconButton>

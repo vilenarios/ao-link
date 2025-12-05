@@ -106,7 +106,7 @@ export function InMemoryTable(props: InMemoryTableProps) {
 
   return (
     <Stack>
-      <Box sx={{ overflowX: 'auto', width: '100%' }}>
+      <Box sx={{ overflowX: "auto", width: "100%" }}>
         <Table size="small" {...rest}>
           <TableHead
           // sx={{ position: "sticky", top: 60 }}

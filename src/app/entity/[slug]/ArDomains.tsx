@@ -1,5 +1,5 @@
-import React from "react"
 import { Box, Typography, CircularProgress } from "@mui/material"
+import React from "react"
 
 import { ArDomainsTable } from "./ArDomainsTable"
 import { useArnsRecordsByOwner } from "@/hooks/useArnsRecordsByOwner"
@@ -20,7 +20,7 @@ function BaseArDomains(props: ArDomainsProps) {
     return (
       <Box p={3}>
         <Typography color="error">
-          Error loading ArNS records: {error instanceof Error ? error.message : 'Unknown error'}
+          Error loading ArNS records: {error instanceof Error ? error.message : "Unknown error"}
         </Typography>
       </Box>
     )
@@ -37,19 +37,12 @@ function BaseArDomains(props: ArDomainsProps) {
   if (!arnsRecords || arnsRecords.length === 0) {
     return (
       <Box p={3}>
-        <Typography color="text.secondary">
-          No ArNS names owned by this entity.
-        </Typography>
+        <Typography color="text.secondary">No ArNS names owned by this entity.</Typography>
       </Box>
     )
   }
 
-  return (
-    <ArDomainsTable
-      records={arnsRecords}
-      loading={isLoading}
-    />
-  )
+  return <ArDomainsTable records={arnsRecords} loading={isLoading} />
 }
 
 export const ArDomains = React.memo(BaseArDomains)

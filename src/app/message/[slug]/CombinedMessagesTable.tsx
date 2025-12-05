@@ -1,15 +1,16 @@
+import { TableRow, TableCell } from "@mui/material"
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react"
 import React, { memo } from "react"
 
-import { AsyncTable, AsyncTableProps } from "@/components/AsyncTable"
+import { useNavigate } from "react-router-dom"
+
+import { AsyncTable } from "@/components/AsyncTable"
 import { IdBlock } from "@/components/IdBlock"
 import { TypeBadge } from "@/components/TypeBadge"
 import { getLinkedMessages, getResultingMessages } from "@/services/messages-api"
 import { AoMessage } from "@/types"
 import { truncateId } from "@/utils/data-utils"
-import { formatFullDate, formatRelative } from "@/utils/date-utils"
-import { TableRow, TableCell } from "@mui/material"
-import { useNavigate } from "react-router-dom"
+import { formatRelative } from "@/utils/date-utils"
 
 interface Props {
   message: AoMessage
@@ -25,7 +26,7 @@ interface DirMessage extends AoMessage {
 }
 
 function BaseCombinedTable(props: Props) {
-  const { message, computeResult, pageSize, onCountReady, onDataReady } = props
+  const { message, pageSize, onCountReady, onDataReady } = props
   const pushedFor = message.tags["Pushed-For"]
 
   const navigate = useNavigate()
@@ -126,4 +127,4 @@ function BaseCombinedTable(props: Props) {
   )
 }
 
-export const CombinedMessagesTable = memo(BaseCombinedTable) 
+export const CombinedMessagesTable = memo(BaseCombinedTable)

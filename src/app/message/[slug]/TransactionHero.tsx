@@ -1,10 +1,11 @@
 import { Paper, Stack, Typography, Tooltip } from "@mui/material"
+
+import { EntityBlock } from "@/components/EntityBlock"
+import { IdBlock } from "@/components/IdBlock"
+import { AoMessage } from "@/types"
+import { truncateId } from "@/utils/data-utils"
 import { formatFullDate, formatRelative } from "@/utils/date-utils"
 import { formatNumber } from "@/utils/number-utils"
-import { truncateId } from "@/utils/data-utils"
-import { AoMessage } from "@/types"
-import { IdBlock } from "@/components/IdBlock"
-import { EntityBlock } from "@/components/EntityBlock"
 
 interface Props {
   message: AoMessage
@@ -84,13 +85,9 @@ export default function TransactionHero(props: Props) {
           <Typography variant="caption" color="text.secondary">
             Pushed&nbsp;for
           </Typography>
-          <IdBlock
-            label={truncateId(pushedFor)}
-            value={pushedFor}
-            href={`/message/${pushedFor}`}
-          />
+          <IdBlock label={truncateId(pushedFor)} value={pushedFor} href={`/message/${pushedFor}`} />
         </Stack>
       )}
     </Paper>
   )
-} 
+}

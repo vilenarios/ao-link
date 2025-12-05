@@ -17,7 +17,7 @@ export const ARNS_NANOSTORE_TTL = 1000 * 60 * 60 * 24 // 24 hours in millisecond
  */
 export function shouldRefreshNanostore(refreshTimestamp: string): boolean {
   if (refreshTimestamp === "0") return true
-  
+
   const delta = new Date().getTime() - parseInt(refreshTimestamp)
   return delta > ARNS_NANOSTORE_TTL
 }

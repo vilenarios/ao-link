@@ -1,4 +1,4 @@
-import { Box, Chip, Stack, Tooltip, Typography } from "@mui/material"
+import { Chip, Stack, Tooltip, Typography } from "@mui/material"
 import { Globe } from "@phosphor-icons/react"
 import { ReactNode } from "react"
 
@@ -31,18 +31,18 @@ export function ArNSNameChip({
           <Stack direction="row" alignItems="center" gap={0.5}>
             {startAdornment}
             {showIcon && (
-              <Globe 
-                size={size === "small" ? 14 : 16} 
+              <Globe
+                size={size === "small" ? 14 : 16}
                 weight="duotone"
                 style={{ color: "#1976d2" }}
               />
             )}
-            <Typography 
-              variant="inherit" 
+            <Typography
+              variant="inherit"
               component="span"
-              sx={{ 
+              sx={{
                 fontFamily: "monospace",
-                fontSize: size === "small" ? "0.75rem" : "0.875rem"
+                fontSize: size === "small" ? "0.75rem" : "0.875rem",
               }}
             >
               {name}
@@ -87,31 +87,27 @@ export function ArNSNameDisplay({
   onClick,
 }: ArNSNameDisplayProps) {
   const content = (
-    <Stack 
-      direction="row" 
-      alignItems="center" 
+    <Stack
+      direction="row"
+      alignItems="center"
       gap={0.5}
       sx={{
         display: inline ? "inline-flex" : "flex",
         color: "#1976d2",
         cursor: onClick ? "pointer" : "default",
-        "&:hover": onClick ? {
-          textDecoration: "underline",
-        } : undefined,
+        "&:hover": onClick
+          ? {
+              textDecoration: "underline",
+            }
+          : undefined,
       }}
       onClick={onClick}
     >
-      {showIcon && (
-        <Globe 
-          size={14} 
-          weight="duotone"
-          style={{ color: "#1976d2" }}
-        />
-      )}
-      <Typography 
-        variant="body2" 
+      {showIcon && <Globe size={14} weight="duotone" style={{ color: "#1976d2" }} />}
+      <Typography
+        variant="body2"
         component={inline ? "span" : "div"}
-        sx={{ 
+        sx={{
           fontFamily: "monospace",
           color: "inherit",
         }}

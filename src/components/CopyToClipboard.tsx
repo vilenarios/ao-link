@@ -22,14 +22,14 @@ const styles = `
   opacity: 1;
   pointer-events: auto;
 }
-`;
+`
 
 // Inject the style tag once
 if (typeof window !== "undefined" && !document.getElementById("copy-to-clipboard-style")) {
-  const style = document.createElement("style");
-  style.id = "copy-to-clipboard-style";
-  style.innerHTML = styles;
-  document.head.appendChild(style);
+  const style = document.createElement("style")
+  style.id = "copy-to-clipboard-style"
+  style.innerHTML = styles
+  document.head.appendChild(style)
 }
 
 type CopyToClipboardProps = {
@@ -75,7 +75,7 @@ export function CopyToClipboard(props: CopyToClipboardProps) {
               color: "var(--mui-palette-text-primary)",
               "& .MuiSvgIcon-root": {
                 fontSize: 18,
-              }
+              },
             }}
             aria-label="Copy to clipboard"
           >

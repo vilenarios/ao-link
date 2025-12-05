@@ -2,10 +2,9 @@ export type HighchartOptions = Highcharts.Options
 
 import dayjs from "dayjs"
 
+import { TitleFontFF } from "../RootLayout/fonts"
 import { HighchartAreaData } from "@/types"
 import { formatNumber } from "@/utils/number-utils"
-
-import { TitleFontFF } from "../RootLayout/fonts"
 
 export const defaultOpts: HighchartOptions = {
   title: {
@@ -140,11 +139,11 @@ export function createOptionsForStat(
   const backgroundColor = exportServer ? "#252424" : "transparent"
 
   const fontSizes = {
-    title: exportServer ? "36px" : (sizeVariant === "small" ? "11px" : "12px"), // Slightly smaller title for small
-    value: exportServer ? "96px" : (sizeVariant === "small" ? "24px" : "32px"), // Adjusted value font size
+    title: exportServer ? "36px" : sizeVariant === "small" ? "11px" : "12px", // Slightly smaller title for small
+    value: exportServer ? "96px" : sizeVariant === "small" ? "24px" : "32px", // Adjusted value font size
   }
 
-  const valueYPosition = exportServer ? 208 : (sizeVariant === "small" ? 98 : 104); // Adjust Y position slightly for smaller font
+  const valueYPosition = exportServer ? 208 : sizeVariant === "small" ? 98 : 104 // Adjust Y position slightly for smaller font
 
   return {
     title: {
@@ -200,7 +199,7 @@ export function createOptionsForStat(
             allowOverlap: true,
             text: (function () {
               if (data.length) {
-                const [_lastX, lastY = 0] = data.at(-1)!
+                const [, lastY = 0] = data.at(-1)!
 
                 const value = Intl.NumberFormat("en", {
                   maximumSignificantDigits: 3,

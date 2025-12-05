@@ -74,8 +74,8 @@ export function TokenTransfersTableRow(props: TokenTransfersTableRowProps) {
       <TableCell>
         <span
           onClick={(e) => {
-            e.stopPropagation();
-            navigate(`/token/${tokenId}`);
+            e.stopPropagation()
+            navigate(`/token/${tokenId}`)
           }}
           style={{ display: "inline-block" }}
         >

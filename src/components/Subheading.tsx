@@ -1,9 +1,8 @@
 import { Stack, Typography, Box } from "@mui/material"
 import React, { ReactNode } from "react"
 
-import { MonoFontFF } from "./RootLayout/fonts"
-import { IdBlock } from "./IdBlock"
 import { CopyToClipboard } from "./CopyToClipboard"
+import { MonoFontFF } from "./RootLayout/fonts"
 
 type SubheadingProps = {
   type: string
@@ -43,21 +42,32 @@ export function Subheading(props: SubheadingProps) {
         </Typography>
         <Box
           sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            maxWidth: '100vw',
-            overflowX: 'auto',
-            whiteSpace: 'nowrap',
+            display: "inline-flex",
+            alignItems: "center",
+            maxWidth: "100vw",
+            overflowX: "auto",
+            whiteSpace: "nowrap",
             fontFamily: MonoFontFF,
-            fontSize: '0.95em',
-            userSelect: 'text',
+            fontSize: "0.95em",
+            userSelect: "text",
             gap: 1,
             lineHeight: 1.2,
           }}
         >
-          {typeof value === 'string' ? (
+          {typeof value === "string" ? (
             <>
-              <span style={{ userSelect: 'text', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '80vw', display: 'inline-block' }}>{value}</span>
+              <span
+                style={{
+                  userSelect: "text",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  maxWidth: "80vw",
+                  display: "inline-block",
+                }}
+              >
+                {value}
+              </span>
               <CopyToClipboard value={value} />
             </>
           ) : (

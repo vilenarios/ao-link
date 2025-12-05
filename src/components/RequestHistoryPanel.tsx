@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense } from "react"
+import { useActiveAddress } from "@arweave-wallet-kit/react"
 import {
   Accordion,
   AccordionSummary,
@@ -10,26 +10,25 @@ import {
   Typography,
 } from "@mui/material"
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2"
-import { useActiveAddress } from "@arweave-wallet-kit/react"
 import { persistentAtom } from "@nanostores/persistent"
 import { useStore } from "@nanostores/react"
 import JSONbig from "json-bigint"
+import React, { useState, lazy, Suspense } from "react"
 
-export const dryRunHistoryStore = persistentAtom<any[]>(
-  "dryRunHistory",
-  [],
-  { encode: JSONbig.stringify, decode: JSONbig.parse },
-)
+export const dryRunHistoryStore = persistentAtom<any[]>("dryRunHistory", [], {
+  encode: JSONbig.stringify,
+  decode: JSONbig.parse,
+})
 
-const MAX_HISTORY = 5;
+const MAX_HISTORY = 5
 
 export function addToDryRunHistory(newItem: any) {
-  const prev = dryRunHistoryStore.get() || [];
-  const updated = [...prev, newItem];
+  const prev = dryRunHistoryStore.get() || []
+  const updated = [...prev, newItem]
   if (updated.length > MAX_HISTORY) {
-    updated.splice(0, updated.length - MAX_HISTORY); // Remove oldest
+    updated.splice(0, updated.length - MAX_HISTORY) // Remove oldest
   }
-  dryRunHistoryStore.set(updated);
+  dryRunHistoryStore.set(updated)
 }
 
 const ChevronDownIcon = () => (
@@ -53,9 +52,9 @@ interface RequestHistoryPanelProps {
   onSelect: (payload: string) => void
 }
 
-const CodeEditor = lazy(() => import("./CodeEditor").then(m=>({default:m.CodeEditor})))
+const CodeEditor = lazy(() => import("./CodeEditor").then((m) => ({ default: m.CodeEditor })))
 
-export function RequestHistoryPanel({ onSelect }: RequestHistoryPanelProps) {
+export function RequestHistoryPanel({ onSelect: _onSelect }: RequestHistoryPanelProps) {
   const address = useActiveAddress()
   const rawHistory = useStore(dryRunHistoryStore)
   const history = Array.isArray(rawHistory) ? rawHistory : []
@@ -73,10 +72,7 @@ export function RequestHistoryPanel({ onSelect }: RequestHistoryPanelProps) {
   const handleChange = (id: string) => (_: any, isExpanded: boolean) =>
     setExpanded(isExpanded ? id : false)
 
-  const displayed = history
-    .slice()
-    .reverse()
-    .slice(0, 10)
+  const displayed = history.slice().reverse().slice(0, 10)
 
   const renderSummary = (item: any) => {
     const reqTags = (item.request.tags || []).reduce((acc: any, t: any) => {
@@ -97,7 +93,7 @@ export function RequestHistoryPanel({ onSelect }: RequestHistoryPanelProps) {
         <Typography variant="body2" fontWeight={500}>
           Delegation Oracle → {resTags["Delegation-Oracle"]}
         </Typography>
-      );
+      )
     }
     // special Info-Response case
     if (resTags.Action === "Info-Response") {
@@ -150,8 +146,7 @@ export function RequestHistoryPanel({ onSelect }: RequestHistoryPanelProps) {
         } else if (typeof rawData === "string") {
           try {
             agentType = JSON.parse(rawData)["Agent-Type"]
-          } catch {
-          }
+          } catch {}
         }
         agentType = agentType ?? resTags["Agent-Type"]
         const name = agentType ?? resTags.Name ?? resTags.Ticker ?? "-"
@@ -218,7 +213,20 @@ export function RequestHistoryPanel({ onSelect }: RequestHistoryPanelProps) {
                       Query
                     </Typography>
                     <Paper sx={{ height: "100%", overflow: "auto" }}>
-                      <Suspense fallback={<div style={{height:200,display:'flex',justifyContent:'center',alignItems:'center'}}>Loading editor...</div>}>
+                      <Suspense
+                        fallback={
+                          <div
+                            style={{
+                              height: 200,
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            Loading editor...
+                          </div>
+                        }
+                      >
                         <CodeEditor
                           height="100%"
                           defaultLanguage="json"
@@ -233,7 +241,20 @@ export function RequestHistoryPanel({ onSelect }: RequestHistoryPanelProps) {
                       Result
                     </Typography>
                     <Paper sx={{ height: "100%", overflow: "auto" }}>
-                      <Suspense fallback={<div style={{height:200,display:'flex',justifyContent:'center',alignItems:'center'}}>Loading editor...</div>}>
+                      <Suspense
+                        fallback={
+                          <div
+                            style={{
+                              height: 200,
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            Loading editor...
+                          </div>
+                        }
+                      >
                         <CodeEditor
                           height="100%"
                           defaultLanguage="json"

@@ -1,10 +1,10 @@
 "use client"
 
 import { useMediaQuery } from "@mui/material"
-import { Highchart, HighchartOptions } from "./Highchart"
-import { createOptionsForStat } from "@/components/Charts/defaultOptions"
-import { theme } from "../RootLayout/theme" // Import theme for breakpoints
 
+import { Highchart, HighchartOptions } from "./Highchart"
+import { theme } from "../RootLayout/theme" // Import theme for breakpoints
+import { createOptionsForStat } from "@/components/Charts/defaultOptions"
 
 import { HighchartAreaData } from "@/types"
 

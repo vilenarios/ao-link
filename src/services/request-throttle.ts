@@ -39,12 +39,12 @@ class RequestThrottler {
         try {
           await request()
         } catch (error) {
-          console.error('Throttled request failed:', error)
+          console.error("Throttled request failed:", error)
         }
-        
+
         // Add delay between requests
         if (this.queue.length > 0) {
-          await new Promise(resolve => setTimeout(resolve, this.delayMs))
+          await new Promise((resolve) => setTimeout(resolve, this.delayMs))
         }
       }
     }
@@ -62,26 +62,28 @@ export const arnsRequestThrottler = new RequestThrottler(200) // 200ms between r
 export async function retryWithBackoff<T>(
   operation: () => Promise<T>,
   maxRetries = 3,
-  baseDelay = 1000
+  baseDelay = 1000,
 ): Promise<T> {
-  let lastError: Error = new Error('No attempts made')
+  let lastError: Error = new Error("No attempts made")
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       return await operation()
     } catch (error: any) {
       lastError = error
-      
+
       // Check if it's a rate limit error
-      if (error.status === 429 || error.message?.includes('429')) {
+      if (error.status === 429 || error.message?.includes("429")) {
         if (attempt < maxRetries) {
           const delay = baseDelay * Math.pow(2, attempt) // Exponential backoff
-          console.warn(`Rate limited (429), retrying in ${delay}ms... (attempt ${attempt + 1}/${maxRetries + 1})`)
-          await new Promise(resolve => setTimeout(resolve, delay))
+          console.warn(
+            `Rate limited (429), retrying in ${delay}ms... (attempt ${attempt + 1}/${maxRetries + 1})`,
+          )
+          await new Promise((resolve) => setTimeout(resolve, delay))
           continue
         }
       }
-      
+
       // For non-rate-limit errors, don't retry
       if (error.status !== 429) {
         throw error
