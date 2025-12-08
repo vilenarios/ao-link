@@ -9,7 +9,6 @@ import { ProcessInteraction } from "./ProcessInteraction"
 import { FetchInfoHandler } from "./ProcessPage/FetchInfoHandler"
 import { SourceCode } from "./SourceCode"
 import { SpawnedProcesses } from "./SpawnedProcesses"
-import { TokenBalances } from "./TokenBalances"
 import { TokenTransfers } from "./TokenTransfers"
 import { BalanceSection } from "@/components/BalanceSection"
 import { ChartDataItem, Graph } from "@/components/Graph"
@@ -61,7 +60,6 @@ export function ProcessPage(props: ProcessPageProps) {
   const [incomingCount, setIncomingCount] = useState<number>()
   const [processesCount, setProcessesCount] = useState<number>()
   const [transfersCount, setTransfersCount] = useState<number>()
-  const [balancesCount, setBalancesCount] = useState<number>()
   const [evalCount, setEvalCount] = useState<number>()
 
   const [outgoingMessages, setOutgoingMessages] = useState<AoMessage[] | null>(null)
@@ -196,8 +194,7 @@ export function ProcessPage(props: ProcessPageProps) {
           <TabWithCount value="outgoing" label="Outgoing messages" chipValue={outgoingCount} />
           <TabWithCount value="incoming" label="Incoming messages" chipValue={incomingCount} />
           <TabWithCount value="spawned" label="Spawned processes" chipValue={processesCount} />
-          <TabWithCount value="transfers" label="Token transfers" chipValue={transfersCount} />
-          <TabWithCount value="balances" label="Token balances" chipValue={balancesCount} />
+          <TabWithCount value="transfers" label="ARIO transfers" chipValue={transfersCount} />
           <TabWithCount value="read" label="Read" sx={{ marginLeft: "auto" }} />
           <TabWithCount value="write" label="Write" />
           <TabWithCount value="source-code" label="Source Code" chipValue={evalCount} />
@@ -227,11 +224,6 @@ export function ProcessPage(props: ProcessPageProps) {
             entityId={entityId}
             open={activeTab === "transfers"}
             onCountReady={setTransfersCount}
-          />
-          <TokenBalances
-            entityId={entityId}
-            open={activeTab === "balances"}
-            onCountReady={setBalancesCount}
           />
           {activeTab === "read" && <ProcessInteraction processId={entityId} readOnly />}
           {activeTab === "write" && <ProcessInteraction processId={entityId} />}

@@ -12,7 +12,10 @@
       "Bash(yarn build)",
       "Bash(npx prettier --write \"src/**/*.{ts,tsx}\")",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:docs.ar.io)"
     ],
     "deny": []
   }

@@ -3,10 +3,12 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { populateReverseLookupCache } from "@/services/arns-cache-utils"
 import { getPrimaryName } from "@/services/arns-service"
 import { ARNS_CACHE_CONFIG } from "@/services/cache-config"
+import { isValidEntityId } from "@/utils/utils"
 
 /**
  * Hook to get the primary ArNS name for a given address using AR-IO SDK
  * This is efficient and only makes a single targeted API call
+ * Supports both Arweave addresses and Ethereum addresses
  */
 export function usePrimaryArnsName(address: string) {
   const queryClient = useQueryClient()
@@ -14,7 +16,7 @@ export function usePrimaryArnsName(address: string) {
   return useQuery({
     queryKey: ["primary-arns-name", address],
     queryFn: async () => {
-      if (!address || address.length !== 43) {
+      if (!address || !isValidEntityId(address)) {
         return null
       }
 
@@ -26,6 +28,6 @@ export function usePrimaryArnsName(address: string) {
       return primaryName
     },
     ...ARNS_CACHE_CONFIG,
-    enabled: Boolean(address && address.length === 43), // Only run for valid Arweave IDs
+    enabled: Boolean(address && isValidEntityId(address)),
   })
 }

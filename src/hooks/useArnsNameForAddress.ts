@@ -2,10 +2,12 @@ import { useQuery } from "@tanstack/react-query"
 
 import { getArNSRecords } from "@/services/arns-service"
 import { ARNS_CACHE_CONFIG } from "@/services/cache-config"
+import { isValidEntityId } from "@/utils/utils"
 
 /**
- * Hook to find the primary ArNS name for a given Arweave address/transaction ID
+ * Hook to find the primary ArNS name for a given address/transaction ID
  * This performs a reverse lookup by searching through ArNS records
+ * Supports both Arweave addresses and Ethereum addresses
  */
 export function useArnsNameForAddress(address: string) {
   return useQuery({
@@ -36,12 +38,13 @@ export function useArnsNameForAddress(address: string) {
       }
     },
     ...ARNS_CACHE_CONFIG,
-    enabled: Boolean(address && address.length === 43), // Only run for valid Arweave IDs
+    enabled: Boolean(address && isValidEntityId(address)),
   })
 }
 
 /**
  * Hook to get multiple ArNS names for multiple addresses
+ * Supports both Arweave addresses and Ethereum addresses
  */
 export function useArnsNamesForAddresses(addresses: string[]) {
   return useQuery({
@@ -68,6 +71,6 @@ export function useArnsNamesForAddresses(addresses: string[]) {
     },
     staleTime: 1000 * 60 * 60, // 1 hour
     gcTime: 1000 * 60 * 60 * 24, // 24 hours
-    enabled: addresses.length > 0 && addresses.every((addr) => addr && addr.length === 43),
+    enabled: addresses.length > 0 && addresses.every((addr) => addr && isValidEntityId(addr)),
   })
 }

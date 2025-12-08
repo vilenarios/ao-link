@@ -1,28 +1,31 @@
-import React, { useMemo } from "react"
 import { Stack, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
+import React, { useMemo } from "react"
 import { Navigate, useParams } from "react-router-dom"
-import PageWrapper from "@/components/PageWrapper"
-import { getMessageById } from "@/services/messages-api"
 
 import { ProcessPage } from "./ProcessPage"
 import { UserPage } from "./UserPage"
 import { LoadingSkeletons } from "@/components/LoadingSkeletons"
+import PageWrapper from "@/components/PageWrapper"
+import { getMessageById } from "@/services/messages-api"
 
 import { AoProcess } from "@/types"
-import { isArweaveId } from "@/utils/utils"
+import { isArweaveId, isValidEntityId } from "@/utils/utils"
 
 function EntityPageContent() {
   const { entityId = "" } = useParams()
 
-  const isValidId = useMemo(() => isArweaveId(String(entityId)), [entityId])
+  const isValidId = useMemo(() => isValidEntityId(String(entityId)), [entityId])
+  const isArweaveAddress = useMemo(() => isArweaveId(String(entityId)), [entityId])
 
+  // Only check if the entity is a message/process for Arweave IDs
+  // Ethereum addresses can own tokens and ArNS names but are not AO messages/processes
   const {
     data: message,
     isLoading,
     error,
   } = useQuery({
-    enabled: Boolean(entityId) && isValidId,
+    enabled: Boolean(entityId) && isValidId && isArweaveAddress,
     queryKey: ["message", entityId],
     queryFn: () => getMessageById(entityId),
   })
@@ -33,6 +36,11 @@ function EntityPageContent() {
         <Typography>{error?.message || "Invalid Entity ID."}</Typography>
       </Stack>
     )
+  }
+
+  // For Ethereum addresses, skip message lookup and show UserPage directly
+  if (!isArweaveAddress) {
+    return <UserPage key={entityId} entityId={entityId} />
   }
 
   if (isLoading) {
