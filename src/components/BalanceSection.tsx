@@ -1,12 +1,11 @@
 import { Avatar, Stack } from "@mui/material"
 import React from "react"
 
-import { truncateId } from "@/utils/data-utils"
-import { nativeTokenInfo } from "@/utils/native-token"
-
 import { IdBlock } from "./IdBlock"
 import { RetryableBalance } from "./RetryableBalance"
 import { SectionInfo } from "./SectionInfo"
+import { truncateId } from "@/utils/data-utils"
+import { getTokenLogoUrl, nativeTokenInfo } from "@/utils/native-token"
 
 type BalanceSectionProps = {
   entityId: string
@@ -26,7 +25,7 @@ export function BalanceSection(props: BalanceSectionProps) {
           <RetryableBalance entityId={entityId} tokenInfo={nativeTokenInfo} />
           {tokenInfo && (
             <Avatar
-              src={`https://arweave.net/${tokenInfo.logo}`}
+              src={getTokenLogoUrl(tokenInfo.logo)}
               alt={tokenInfo.name}
               sx={{ width: 16, height: 16 }}
             />

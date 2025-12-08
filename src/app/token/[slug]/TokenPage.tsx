@@ -16,6 +16,7 @@ import { TokenAmountBlock } from "@/components/TokenAmountBlock"
 import { ARIO_TOKEN_ID } from "@/config/ario"
 import { useTokenInfo } from "@/hooks/useTokenInfo"
 import { TokenHolder, getTokenHolders } from "@/services/token-api"
+import { getTokenLogoUrl } from "@/utils/native-token"
 import { isArweaveId } from "@/utils/utils"
 
 const defaultTab = "table"
@@ -74,7 +75,7 @@ export default function TokenPage() {
             ) : (
               <Stack direction="row" gap={1} alignItems="center">
                 <Avatar
-                  src={`https://arweave.net/${tokenInfo.logo}`}
+                  src={getTokenLogoUrl(tokenInfo.logo)}
                   alt={tokenInfo.name}
                   sx={{ width: 48, height: 48 }}
                 />

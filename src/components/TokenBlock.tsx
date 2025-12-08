@@ -1,10 +1,10 @@
 import { Avatar, Stack } from "@mui/material"
 import React from "react"
 
+import { IdBlock } from "./IdBlock"
 import { TokenInfo } from "@/services/token-api"
 import { truncateId } from "@/utils/data-utils"
-
-import { IdBlock } from "./IdBlock"
+import { getTokenLogoUrl } from "@/utils/native-token"
 
 type TokenBlockProps = {
   tokenId: string
@@ -19,7 +19,7 @@ export function TokenBlock(props: TokenBlockProps) {
       <Stack direction="row" gap={1} alignItems="center">
         {tokenInfo && (
           <Avatar
-            src={`https://arweave.net/${tokenInfo.logo}`}
+            src={getTokenLogoUrl(tokenInfo.logo)}
             alt={tokenInfo.name}
             sx={{ width: 16, height: 16 }}
           />
