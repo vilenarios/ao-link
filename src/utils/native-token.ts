@@ -1,13 +1,12 @@
+import { ARIO_TOKEN_ID } from "@/config/ario"
 import { TokenInfo } from "@/services/token-api"
 
 export const nativeTokenInfo: TokenInfo = {
-  processId: "0syT13r0s0tgPmIed95bJnuSqaD29HQNN8D3ElLSrsc",
-  denomination: 12,
-  ticker: "AO",
-  logo: "UkS-mdoiG8hcAClhKK8ch4ZhEzla0mCPDOix9hpdSFE",
-  name: "AO",
+  processId: ARIO_TOKEN_ID,
+  denomination: 6,
+  ticker: "ARIO",
+  logo: "HxPogiCr43uxn4vKy4-SuSjVJpQi1i5YRvws6ucOGL4",
+  name: "ARIO",
 }
 
-export const tokenMirrors = {
-  [nativeTokenInfo.processId]: "0syT13r0s0tgPmIed95bJnuSqaD29HQNN8D3ElLSrsc",
-}
+export const tokenMirrors: Record<string, string> = {}
