@@ -48,12 +48,6 @@ function BaseTokenTransfersTable(props: TokenTransfersTableProps) {
           field: "amount",
         },
         {
-          label: "Token",
-          sortable: true,
-          field: "tokenId",
-          sx: { width: 240 },
-        },
-        {
           field: "ingestedAt" satisfies keyof TokenTransferMessage,
           label: (
             <Stack direction="row" gap={0.5} alignItems="center">

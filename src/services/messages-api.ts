@@ -3,11 +3,12 @@ import { MessageResult } from "@permaweb/aoconnect/dist/lib/result"
 import { gql } from "urql"
 
 import { goldsky } from "./graphql-client"
+import { ARIO_TOKEN_ID } from "@/config/ario"
 import { AoMessage, NetworkStat, TokenTransferMessage, TransactionsResponse } from "@/types"
 
 import { messageFields, parseAoMessage, parseTokenEvent } from "@/utils/arweave-utils"
 
-import { isArweaveId } from "@/utils/utils"
+import { isArweaveId, normalizeAddressForOwner } from "@/utils/utils"
 
 // const AO_NETWORK_IDENTIFIER = '{ name: "SDK", values: ["aoconnect"] }'
 // const AO_NETWORK_IDENTIFIER = '{ name: "Variant", values: ["ao.TN.1"] }'
@@ -54,13 +55,16 @@ export async function getOutgoingMessages(
   isProcess?: boolean,
 ): Promise<[number | undefined, AoMessage[]]> {
   try {
+    // Normalize Ethereum addresses for owner queries (when not a process)
+    const normalizedEntityId = isProcess ? entityId : await normalizeAddressForOwner(entityId)
+
     const result = await goldsky
       .query<TransactionsResponse>(outgoingMessagesQuery(!cursor, isProcess), {
         limit,
         sortOrder: ascending ? "HEIGHT_ASC" : "INGESTED_AT_DESC",
         cursor,
         //
-        entityId,
+        entityId: normalizedEntityId,
       })
       .toPromise()
     const { data } = result
@@ -145,7 +149,11 @@ const tokenTransfersQuery = (includeCount = false) => gql`
       first: $limit
       after: $cursor
 
-      tags: [{ name: "Action", values: ["Credit-Notice", "Debit-Notice"] }, ${AO_NETWORK_IDENTIFIER}]
+      tags: [
+        { name: "Action", values: ["Credit-Notice", "Debit-Notice"] },
+        { name: "From-Process", values: ["${ARIO_TOKEN_ID}"] },
+        ${AO_NETWORK_IDENTIFIER}
+      ]
       recipients: [$entityId]
       ${AO_MIN_INGESTED_AT}
     ) {
@@ -227,13 +235,16 @@ export async function getSpawnedProcesses(
   isProcess?: boolean,
 ): Promise<[number | undefined, AoMessage[]]> {
   try {
+    // Normalize Ethereum addresses for owner queries (when not a process)
+    const normalizedEntityId = isProcess ? entityId : await normalizeAddressForOwner(entityId)
+
     const result = await goldsky
       .query<TransactionsResponse>(spawnedProcessesQuery(!cursor, isProcess), {
         limit,
         sortOrder: ascending ? "HEIGHT_ASC" : "INGESTED_AT_DESC",
         cursor,
         //
-        entityId,
+        entityId: normalizedEntityId,
       })
       .toPromise()
     const { data } = result
