@@ -31,11 +31,19 @@ export function TokenAmountBlock(props: TokenAmountBlockProps) {
   })
 
   return (
-    <Typography fontFamily={MonoFontFF} component="div" variant="inherit">
+    <Typography
+      fontFamily={MonoFontFF}
+      component="div"
+      variant="inherit"
+      sx={{ fontVariantNumeric: "tabular-nums", textAlign: "right" }}
+    >
       <Box
         sx={{
           fill: "none",
           "&:hover": { fill: "var(--mui-palette-text-secondary)" },
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 0.5,
         }}
       >
         <Tooltip
