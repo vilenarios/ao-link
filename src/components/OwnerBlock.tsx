@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 
 import { EntityBlock } from "./EntityBlock"
 import { MonoFontFF } from "./RootLayout/fonts"
+import { getTxDataUrl } from "@/config/gateway"
 import { useArnsLogo } from "@/hooks/useArnsLogo"
 import { usePrimaryArnsName } from "@/hooks/usePrimaryArnsName"
 
@@ -45,7 +46,7 @@ export function OwnerBlock(props: OwnerBlockProps) {
           {logoTxId && (
             <Box
               component="img"
-              src={`https://arweave.net/${logoTxId}`}
+              src={getTxDataUrl(logoTxId)}
               alt={`${primaryName} logo`}
               sx={{
                 width: 14,

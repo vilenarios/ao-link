@@ -5,6 +5,7 @@ import { gql } from "urql"
 import { resolveEthToNormalizedAddress } from "./eth-normalization"
 import { goldsky } from "./graphql-client"
 import { ARIO_TOKEN_ID } from "@/config/ario"
+import { getTxDataUrl } from "@/config/gateway"
 import { AoMessage, NetworkStat, TokenTransferMessage, TransactionsResponse } from "@/types"
 
 import { messageFields, parseAoMessage, parseTokenEvent } from "@/utils/arweave-utils"
@@ -1063,7 +1064,7 @@ export async function getNetworkStats(): Promise<NetworkStat[]> {
     const { edges } = result.data.transactions
     const updateId = edges[0]?.node.id
 
-    const data = await fetch(`https://arweave.net/${updateId}`)
+    const data = await fetch(getTxDataUrl(updateId))
     const json = await data.json()
 
     return json as NetworkStat[]

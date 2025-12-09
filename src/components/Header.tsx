@@ -27,13 +27,15 @@ import {
   MagnifyingGlass,
   ArrowLeft,
 } from "@phosphor-icons/react"
-import { useState, useCallback } from "react" // Imported useCallback
+import { useState, useCallback } from "react"
+
 import { Link, useNavigate } from "react-router-dom"
 
 import { Logo } from "./Logo"
 import { MainFontFF } from "./RootLayout/fonts"
 import { theme } from "./RootLayout/theme" // Import theme for breakpoints
 import SearchBar from "@/app/SearchBar"
+import { getTxDataUrl } from "@/config/gateway"
 import { useArnsLogo } from "@/hooks/useArnsLogo"
 import { usePrimaryArnsName } from "@/hooks/usePrimaryArnsName"
 
@@ -104,7 +106,7 @@ const ProfileButton = () => {
             {logoTxId && (
               <Box
                 component="img"
-                src={`https://arweave.net/${logoTxId}`}
+                src={getTxDataUrl(logoTxId)}
                 alt={`${arnsName} logo`}
                 sx={{
                   width: 20,

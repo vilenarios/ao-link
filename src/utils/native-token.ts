@@ -1,4 +1,5 @@
 import { ARIO_TOKEN_ID } from "@/config/ario"
+import { getTxDataUrl } from "@/config/gateway"
 import { TokenInfo } from "@/services/token-api"
 
 export const nativeTokenInfo: TokenInfo = {
@@ -18,5 +19,5 @@ export function getTokenLogoUrl(logo: string): string {
   if (logo.startsWith("/") || logo.startsWith("http")) {
     return logo
   }
-  return `https://arweave.net/${logo}`
+  return getTxDataUrl(logo)
 }

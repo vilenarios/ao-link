@@ -2,6 +2,7 @@ import { Paper, Stack, Typography } from "@mui/material"
 import React, { useEffect, useState } from "react"
 
 import { FormattedDataBlock } from "@/components/FormattedDataBlock"
+import { getTxDataUrl } from "@/config/gateway"
 import { AoMessage } from "@/types"
 
 export function MessageData(props: { message: AoMessage }) {
@@ -15,7 +16,7 @@ export function MessageData(props: { message: AoMessage }) {
     if (message.type === "Checkpoint") {
       setData("Message too long")
     } else {
-      fetch(`https://arweave.net/${message.id}`)
+      fetch(getTxDataUrl(message.id))
         .then((res) => res.text())
         .then(setData)
     }
