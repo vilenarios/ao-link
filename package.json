@@ -1,6 +1,6 @@
 {
   "name": "ar-io-scan",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -11,7 +11,7 @@
     "lint:fix": "npm run lint -- --fix",
     "prepare": "husky install",
     "predeploy": "rm -rf ./dist-* && npm run build",
-    "deploy": "permaweb-deploy --ant-process My3zjcGNtaOaZntPCLXZjIKAzOqluRRHCIUh9mUzzAo"
+    "deploy": "permaweb-deploy --ant-process QW-TpO5rmmWLglhChZGC_PEepOUlDazAPH9hevYUIkg"
   },
   "dependencies": {
     "@ar.io/sdk": "^3.12.2",
