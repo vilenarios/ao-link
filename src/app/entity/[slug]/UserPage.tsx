@@ -1,5 +1,5 @@
 import { Box, Stack, Tabs } from "@mui/material"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 
 // import { ArDomains } from "./ArDomains"
@@ -10,8 +10,10 @@ import { TokenTransfers } from "./TokenTransfers"
 import { ArnsSection } from "@/components/ArnsSection"
 import { BalanceSection } from "@/components/BalanceSection"
 import { IdBlock } from "@/components/IdBlock"
+import { SectionInfo } from "@/components/SectionInfo"
 import { Subheading } from "@/components/Subheading"
 import { TabWithCount } from "@/components/TabWithCount"
+import { resolveEthToNormalizedAddress } from "@/services/eth-normalization"
 import { UserAddress } from "@/types"
 import { isEthereumAddress } from "@/utils/utils"
 
@@ -23,15 +25,10 @@ export function UserPage(props: UserPageProps) {
   const { entityId } = props
   const isEthUser = isEthereumAddress(entityId)
 
-  // ETH users can't query by owner (requires public key for normalization),
-  // so default to incoming messages for them
-  const defaultTab = isEthUser ? "incoming" : "outgoing"
+  // ETH users default to outgoing (same as Arweave users) now that normalization works
+  const defaultTab = "outgoing"
 
-  // All tabs now work for ETH users:
-  // - Outgoing messages: via Sender tag query
-  // - Incoming messages: via Recipient tag query
-  // - Spawned processes: via normalized address lookup (from Pushed-For tag)
-  // - ARIO transfers: via Sender/Recipient tag queries
+  // All tabs now work for ETH users via normalized address lookup
 
   const [searchParams, setSearchParams] = useSearchParams()
   const requestedTab = searchParams.get("tab")
@@ -53,10 +50,26 @@ export function UserPage(props: UserPageProps) {
   const [processesCount, setProcessesCount] = useState<number>()
   const [transfersCount, setTransfersCount] = useState<number>()
 
+  // For ETH users, fetch their normalized Arweave address
+  const [normalizedAddress, setNormalizedAddress] = useState<string | null>(null)
+  useEffect(() => {
+    if (isEthUser) {
+      resolveEthToNormalizedAddress(entityId).then((resolved) => {
+        // Only set if it's different from the original (meaning we found a normalized address)
+        if (resolved !== entityId) {
+          setNormalizedAddress(resolved)
+        }
+      })
+    }
+  }, [entityId, isEthUser])
+
   return (
     <Stack component="main" gap={6} paddingY={4}>
       <Subheading type="USER" value={<IdBlock label={entityId} />} />
       <Stack gap={1}>
+        {normalizedAddress && (
+          <SectionInfo title="Normalized Address" value={<IdBlock label={normalizedAddress} />} />
+        )}
         <BalanceSection entityId={entityId} />
         <ArnsSection entityId={entityId} />
       </Stack>

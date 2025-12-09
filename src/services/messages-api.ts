@@ -47,32 +47,6 @@ const outgoingMessagesQuery = (includeCount = false, isProcess?: boolean) => gql
   ${messageFields}
 `
 
-// Query for outgoing messages from ETH users via Sender tag
-const ethOutgoingMessagesQuery = (includeCount = false) => gql`
-  query (
-    $ethAddress: String!
-    $limit: Int!
-    $sortOrder: SortOrder!
-    $cursor: String
-  ) {
-    transactions(
-      sort: $sortOrder
-      first: $limit
-      after: $cursor
-      ${AO_MIN_INGESTED_AT}
-      tags: [
-        { name: "Sender", values: [$ethAddress] },
-        ${AO_NETWORK_IDENTIFIER}
-      ]
-    ) {
-      ${includeCount ? "count" : ""}
-      ...MessageFields
-    }
-  }
-
-  ${messageFields}
-`
-
 export async function getOutgoingMessages(
   limit = 100,
   cursor = "",
@@ -82,10 +56,9 @@ export async function getOutgoingMessages(
   isProcess?: boolean,
 ): Promise<[number | undefined, AoMessage[]]> {
   try {
-    // For ETH addresses, use tag-based query via Sender tag
-    if (isEthereumAddress(entityId) && !isProcess) {
-      return getOutgoingMessagesForEthUser(limit, cursor, ascending, entityId)
-    }
+    // For ETH users, resolve to normalized address to get ALL outgoing messages
+    // (not just those with Sender tag)
+    const resolvedEntityId = isProcess ? entityId : await resolveEthToNormalizedAddress(entityId)
 
     const result = await goldsky
       .query<TransactionsResponse>(outgoingMessagesQuery(!cursor, isProcess), {
@@ -93,7 +66,7 @@ export async function getOutgoingMessages(
         sortOrder: ascending ? "HEIGHT_ASC" : "INGESTED_AT_DESC",
         cursor,
         //
-        entityId,
+        entityId: resolvedEntityId,
       })
       .toPromise()
     const { data } = result
@@ -105,39 +78,6 @@ export async function getOutgoingMessages(
 
     return [count, events]
   } catch (error) {
-    return [0, []]
-  }
-}
-
-/**
- * Get outgoing messages for ETH users by querying Sender tag
- */
-async function getOutgoingMessagesForEthUser(
-  limit: number,
-  cursor: string,
-  ascending: boolean,
-  ethAddress: string,
-): Promise<[number | undefined, AoMessage[]]> {
-  try {
-    const result = await goldsky
-      .query<TransactionsResponse>(ethOutgoingMessagesQuery(!cursor), {
-        limit,
-        sortOrder: ascending ? "HEIGHT_ASC" : "INGESTED_AT_DESC",
-        cursor,
-        ethAddress,
-      })
-      .toPromise()
-
-    const { data } = result
-
-    if (!data) return [0, []]
-
-    const { count, edges } = data.transactions
-    const events = edges.map(parseAoMessage)
-
-    return [count, events]
-  } catch (error) {
-    console.error("Error fetching outgoing messages for ETH user:", error)
     return [0, []]
   }
 }
