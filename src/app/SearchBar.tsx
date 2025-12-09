@@ -115,6 +115,13 @@ async function findByText(text: string, abortSignal?: AbortSignal): Promise<Resu
         type: msg.type === "Process" ? "Process" : "Message",
       })
     }
+
+    // Always offer to search as a User/wallet address (could be an Arweave wallet)
+    results.push({
+      label: `${text} (AR User)`,
+      id: text,
+      type: "User" as ResultType,
+    })
   } else {
     // Input is likely an ArNS name - only search ArNS (don't waste calls on GraphQL/ANT checks)
     const arnsResolution = await resolveArNSName(text).catch(() => null)
@@ -285,7 +292,7 @@ const SearchBar = () => {
         filterOptions={(x) => x}
         renderInput={(params) => (
           <TextField
-            placeholder="Search by ArNS name, AR.IO Message ID or ANT Process ID"
+            placeholder="Search by User ID, ArNS Name, AR.IO Message ID or ANT Process ID"
             sx={{
               background: "var(--mui-palette-background-default) !important",
               "& fieldset": {
