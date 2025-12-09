@@ -136,7 +136,7 @@ export function createOptionsForStat(
   sizeVariant: "normal" | "small" = "normal", // New parameter
 ): HighchartOptions {
   const fontColor = exportServer ? "rgb(255, 255, 255)" : "var(--mui-palette-text-primary)"
-  const backgroundColor = exportServer ? "#252424" : "transparent"
+  const backgroundColor = exportServer ? "#0e0e0f" : "transparent"
 
   const fontSizes = {
     title: exportServer ? "36px" : sizeVariant === "small" ? "11px" : "12px", // Slightly smaller title for small
@@ -218,13 +218,13 @@ export function createOptionsForStat(
       {
         data,
         lineWidth: 1,
-        lineColor: "#29CC00",
+        lineColor: "#3DB7C2", // streak-up cyan color
         color: {
           linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
           stops: [
-            [0, "rgba(41, 204, 0, 1)"],
-            [0.5, "rgba(41, 204, 0, 0.33)"],
-            [1, "rgba(41, 204, 0, 0)"],
+            [0, "rgba(61, 183, 194, 1)"],
+            [0.5, "rgba(61, 183, 194, 0.33)"],
+            [1, "rgba(61, 183, 194, 0)"],
           ],
         },
         type: "area",

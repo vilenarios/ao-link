@@ -27,8 +27,19 @@ export function UserPage(props: UserPageProps) {
   // so default to incoming messages for them
   const defaultTab = isEthUser ? "incoming" : "outgoing"
 
+  // Tabs that are not available for ETH users
+  const ethUnavailableTabs = ["outgoing", "spawned"]
+
   const [searchParams, setSearchParams] = useSearchParams()
-  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || defaultTab)
+  const requestedTab = searchParams.get("tab")
+
+  // If ETH user has a tab in URL that's not available, fall back to default
+  const initialTab =
+    requestedTab && (!isEthUser || !ethUnavailableTabs.includes(requestedTab))
+      ? requestedTab
+      : defaultTab
+
+  const [activeTab, setActiveTab] = useState(initialTab)
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setActiveTab(newValue)
     if (newValue === defaultTab) {

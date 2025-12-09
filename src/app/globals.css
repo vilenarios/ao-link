@@ -1,65 +1,231 @@
-html[data-mui-color-scheme="dark"]:root {
-  color-scheme: dark;
+/* AR.IO Network Portal Theme - CSS Variables & Global Styles */
+
+/* ============================================
+   DARK MODE (Default)
+   ============================================ */
+:root,
+[data-mui-color-scheme="dark"] {
+  /* Grey Scale - Dark Mode */
+  --grey-100: #cacad6;
+  --grey-200: #a3a3ad;
+  --grey-300: #7f7f87;
+  --grey-400: #3b3b45;
+  --grey-500: #303038;
+  --grey-600: #262629;
+  --grey-700: #212124;
+  --grey-800: #1e1e24;
+  --grey-900: #1c1c1f;
+  --grey-1000: #0e0e0f;
+  --grey-1100: #050505;
+
+  /* Semantic Text Colors */
+  --text-high: var(--grey-100);
+  --text-mid: var(--grey-200);
+  --text-low: var(--grey-300);
+
+  /* Container Backgrounds */
+  --container-l0: #09090a;
+  --container-l3: var(--grey-800);
+
+  /* Gradient Colors */
+  --gradient-primary-start: #f7c3a1;
+  --gradient-primary-end: #df9be8;
+  --gradient-red-start: #ffb4b4;
+  --gradient-red-end: #ff6c6c;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(
+    88deg,
+    var(--gradient-primary-start) 0%,
+    var(--gradient-primary-end) 100%
+  );
+  --gradient-red: linear-gradient(
+    88deg,
+    var(--gradient-red-start) 0%,
+    var(--gradient-red-end) 100%
+  );
+
+  /* Status Colors */
+  --color-error: #db4354;
+  --color-success: #349fa8;
+  --color-warning: #ffb938;
+  --color-streak-up: #3db7c2;
+
+  /* Borders & Dividers */
+  --divider: #232329;
+  --stroke-low: rgba(202, 202, 214, 0.08);
+
+  /* Transparent Variants */
+  --transparent-100-64: rgba(202, 202, 214, 0.64);
+  --transparent-100-32: rgba(202, 202, 214, 0.32);
+  --transparent-100-16: rgba(202, 202, 214, 0.16);
+  --transparent-100-12: rgba(202, 202, 214, 0.12);
+  --transparent-100-8: rgba(202, 202, 214, 0.08);
+  --transparent-100-4: rgba(202, 202, 214, 0.04);
+
+  /* Tag/Badge text color - light text on colored backgrounds in dark mode */
+  --tag-text: #ffffff;
+
+  /* Gradient color with opacity variants */
+  --gradient-primary-start-10: rgba(247, 195, 161, 0.1);
+  --gradient-primary-start-56: rgba(247, 195, 161, 0.56);
 }
 
+/* ============================================
+   LIGHT MODE
+   ============================================ */
+[data-mui-color-scheme="light"] {
+  /* Grey Scale - Light Mode (inverted) */
+  --grey-100: #1a1a1f;
+  --grey-200: #3d3d47;
+  --grey-300: #5c5c66;
+  --grey-400: #8a8a94;
+  --grey-500: #b5b5bf;
+  --grey-600: #d4d4de;
+  --grey-700: #e8e8f0;
+  --grey-800: #f0f0f5;
+  --grey-900: #f5f5f8;
+  --grey-1000: #fafafa;
+  --grey-1100: #ffffff;
+
+  /* Semantic Text Colors - Dark on Light */
+  --text-high: #1a1a1f;
+  --text-mid: #3d3d47;
+  --text-low: #5c5c66;
+
+  /* Container Backgrounds - Light */
+  --container-l0: #ffffff;
+  --container-l3: #f0f0f5;
+
+  /* Status Colors - Slightly adjusted for light bg contrast */
+  --color-error: #c93545;
+  --color-success: #2d8a92;
+  --color-warning: #d9a020;
+  --color-streak-up: #2a9da8;
+
+  /* Borders & Dividers - Light Mode */
+  --divider: #b5b5bf;
+  --stroke-low: rgba(26, 26, 31, 0.08);
+
+  /* Transparent Variants - Dark for light mode */
+  --transparent-100-64: rgba(26, 26, 31, 0.64);
+  --transparent-100-32: rgba(26, 26, 31, 0.32);
+  --transparent-100-16: rgba(26, 26, 31, 0.16);
+  --transparent-100-12: rgba(26, 26, 31, 0.12);
+  --transparent-100-8: rgba(26, 26, 31, 0.08);
+  --transparent-100-4: rgba(26, 26, 31, 0.04);
+
+  /* Tag/Badge text color - white text on colored backgrounds in light mode */
+  --tag-text: #ffffff;
+}
+
+/* Dark mode is default */
+html {
+  color-scheme: dark;
+  background-color: #0e0e0f; /* grey-1000 - prevents flash of white */
+}
+
+html[data-mui-color-scheme="dark"] {
+  color-scheme: dark;
+  background-color: #0e0e0f;
+}
+
+html[data-mui-color-scheme="light"] {
+  color-scheme: light;
+  background-color: #fafafa;
+}
+
+/* Base body styles */
 body {
+  background-color: var(--grey-1000);
+  color: var(--text-high);
   overflow-y: scroll;
 }
 
-:root {
-  --background-color: 255, 255, 255;
-  --gradient-start-color: 84, 91, 255;
-  --gradient-stop-color: 168, 171, 255;
-  background: rgb(var(--background-color));
+/* Scrollbar styling */
+body * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--grey-400) var(--grey-1100);
 }
 
-html[data-mui-color-scheme="dark"] :root {
-  --background-color: #252424;
-  --gradient-start-color: 84, 91, 255;
-  --gradient-stop-color: 168, 171, 255;
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.separator {
-  position: absolute;
-  top: 50%;
-  right: 0;
-  transform: translateY(-25%);
-  height: 50%;
-  border-right: 0.25px solid #222326;
-  /* Adjust the border style as needed */
-  opacity: 0.5;
+*::-webkit-scrollbar-track {
+  background: var(--grey-1100);
 }
 
-html[data-mui-color-scheme="dark"] .separator {
-  border-right: 0.25px solid #fff;
+*::-webkit-scrollbar-thumb {
+  background: var(--grey-400);
+  border-radius: 4px;
 }
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--grey-300);
+}
+
+/* ============================================
+   GRADIENT TEXT UTILITIES
+   ============================================ */
+
+/* Primary gradient text (peach to purple) - matches portal's .text-gradient */
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Red gradient text - for errors/warnings */
+.text-gradient-red {
+  background: var(--gradient-red);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gradient text on hover */
+.hover-text-gradient:hover {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   TABLE STYLES
+   ============================================ */
 
 .table-headers {
-  color: #9ea2aa;
+  color: var(--text-low);
   font-size: 12px;
-  font-weight: 400;
+  font-weight: 500;
   line-height: normal;
-  letter-spacing: -0.12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .table-row {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 400;
   line-height: normal;
-  letter-spacing: -0.12px;
+  color: var(--text-low);
   height: 50px;
+  border-top: 1px solid var(--grey-500);
 }
 
 .table-row:hover {
-  background-color: #ddd;
+  background-color: var(--grey-900);
 }
 
-html[data-mui-color-scheme="dark"] .table-row:hover {
-  background-color: #444;
-}
+/* ============================================
+   CHART STYLES
+   ============================================ */
 
 .chart-label {
-  color: #222326;
+  color: var(--text-low);
   font-family: "Rubik", sans-serif;
   font-size: 12px;
   font-weight: 400;
@@ -67,6 +233,72 @@ html[data-mui-color-scheme="dark"] .table-row:hover {
   letter-spacing: -0.12px;
   text-transform: uppercase;
 }
+
+/* ============================================
+   SEPARATOR / DIVIDER
+   ============================================ */
+
+.separator {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-25%);
+  height: 50%;
+  border-right: 1px solid var(--divider);
+  opacity: 0.5;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* Status colors */
+.text-success {
+  color: var(--color-success);
+}
+
+.text-error {
+  color: var(--color-error);
+}
+
+.text-warning {
+  color: var(--color-warning);
+}
+
+.text-streak-up {
+  color: var(--color-streak-up);
+}
+
+/* Text hierarchy */
+.text-high {
+  color: var(--text-high);
+}
+
+.text-mid {
+  color: var(--text-mid);
+}
+
+.text-low {
+  color: var(--text-low);
+}
+
+/* Container backgrounds */
+.bg-container-l0 {
+  background-color: var(--container-l0);
+}
+
+.bg-container-l3 {
+  background-color: var(--container-l3);
+}
+
+/* Borders */
+.border-stroke-low {
+  border-color: var(--stroke-low);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
 
 .loader {
   animation: bounce 2s infinite;
@@ -85,19 +317,18 @@ html[data-mui-color-scheme="dark"] .table-row:hover {
   }
 }
 
+/* ============================================
+   TOOLTIP STYLES
+   ============================================ */
+
 .tooltip::before {
   overflow-wrap: anywhere;
 }
 
-body * {
-  scrollbar-width: thin;
-}
+/* ============================================
+   RESPONSIVE HELPERS
+   ============================================ */
 
-body .a1osnke6 > div:not(:nth-child(1)) {
-  display: none;
-}
-
-/* --- Responsive helpers -------------------------------------------------- */
 @media (max-width: 600px) {
   table,
   pre {
@@ -116,4 +347,42 @@ video {
 input,
 button {
   touch-action: manipulation;
+}
+
+/* Hide unnecessary wallet kit elements */
+body .a1osnke6 > div:not(:nth-child(1)) {
+  display: none;
+}
+
+/* ============================================
+   LINK STYLES (Portal Pattern)
+   ============================================ */
+
+/* Gradient link - use for primary/important links */
+a.link-gradient,
+.link-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a.link-gradient:hover,
+.link-gradient:hover {
+  opacity: 0.8;
+}
+
+/* Standard link - text-mid that becomes text-high on hover */
+a.link-standard,
+.link-standard {
+  color: var(--text-mid);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+a.link-standard:hover,
+.link-standard:hover {
+  color: var(--text-high);
 }

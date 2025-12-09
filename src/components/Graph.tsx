@@ -74,12 +74,21 @@ interface CustomLink extends SimulationNodeDatum {
   curvature: number
 }
 
+// Theme-aware colors - using hardcoded values that work in both modes
+// These are accessed at render time when CSS vars may not be available to D3
 const COLORS = {
-  lightGreen: "#57E51A",
-  green: "#6BB24C",
-  lightRed: "#596EA6",
-  red: "#D52C2C",
-  blue: "#0046FF",
+  // Status colors
+  success: "#349fa8",
+  error: "#DB4354",
+  info: "#3DB7C2",
+  // Graph-specific colors
+  nodeDefault: "#707078",
+  nodeProcess: "#5878a8",
+  nodeUser: "#a87858",
+  nodeThisProcess: "#3DB7C2",
+  linkUser: "#b874a8",
+  linkCranked: "#349fa8",
+  stroke: "#8a8a94",
 }
 
 const defaultAlphaDecay = 0.0228
@@ -96,26 +105,6 @@ const SMALL_GRAPH = {
   distance: 200,
   fontSize: "0.75rem",
   chargeStrength: -40,
-}
-
-const MEDIUM_GRAPH = {
-  nodeRadius: 12,
-  linkWidth: 8,
-  arrowWidth: 4,
-  arrowDistance: 12,
-  distance: 100,
-  fontSize: "1rem",
-  chargeStrength: -400,
-}
-
-const LARGE_GRAPH = {
-  nodeRadius: 16,
-  linkWidth: 8,
-  arrowWidth: 4,
-  arrowDistance: 14,
-  distance: 300,
-  fontSize: "1rem",
-  chargeStrength: -50,
 }
 
 function BaseGraph(props: GraphProps) {
@@ -175,9 +164,6 @@ function BaseGraph(props: GraphProps) {
       }
     })
 
-    const myColors = [COLORS.green]
-    const color = d3.scaleOrdinal(types, myColors)
-
     const largeGraph = nodes.length > 20
 
     const simulation = d3
@@ -187,7 +173,7 @@ function BaseGraph(props: GraphProps) {
         "link",
         d3
           .forceLink<CustomNode, CustomLink>(links) // Assuming CustomLink is your link type
-          .id((d: SimulationNodeDatum, i?: number, nodesData?: SimulationNodeDatum[]) => {
+          .id((d: SimulationNodeDatum) => {
             // Use type assertion here to tell TypeScript that `d` is indeed a CustomNode
             return (d as CustomNode).id
           })
@@ -208,7 +194,7 @@ function BaseGraph(props: GraphProps) {
       .data(links)
       .join("path")
       .attr("id", (d) => `link-${d.source.id}-${d.target.id}`)
-      .attr("stroke", (d) => (d.type === "User Message" ? COLORS.red : COLORS.green))
+      .attr("stroke", (d) => (d.type === "User Message" ? COLORS.linkUser : COLORS.linkCranked))
       .attr("opacity", (d) => (d.highlight ? 1 : 0.5))
       .attr("marker-end", (d) => `url(${new URL(`#arrow-${d.type}`, location.href)})`)
       .style("cursor", "pointer")
@@ -240,7 +226,7 @@ function BaseGraph(props: GraphProps) {
       .attr("markerHeight", sizes.arrowWidth)
       .attr("orient", "auto")
       .append("path")
-      .attr("fill", (d) => (d === "User Message" ? COLORS.red : color(d)))
+      .attr("fill", (d) => (d === "User Message" ? COLORS.linkUser : COLORS.linkCranked))
       .attr("d", "M0,-5L10,0L0,5")
 
     const node = svg
@@ -257,15 +243,15 @@ function BaseGraph(props: GraphProps) {
     // Nodes
     node
       .append("circle")
-      .attr("stroke", "white")
+      .attr("stroke", COLORS.stroke)
       .attr("stroke-width", 1.5)
       .attr("r", sizes.nodeRadius)
       .attr("fill", (d) => {
-        if (d.label === "This Process") return COLORS.blue
-        else if (d.label.startsWith("Process")) return COLORS.lightRed
-        else if (d.label === "User") return COLORS.red
-        else if (d.label.startsWith("User")) return COLORS.green
-        return "black"
+        if (d.label === "This Process") return COLORS.nodeThisProcess
+        else if (d.label.startsWith("Process")) return COLORS.nodeProcess
+        else if (d.label === "User") return COLORS.linkUser
+        else if (d.label.startsWith("User")) return COLORS.nodeUser
+        return COLORS.nodeDefault
       })
 
     // Add text to the nodes
@@ -337,7 +323,6 @@ function BaseGraph(props: GraphProps) {
       // Stop the simulation or any intervals/timers here
       simulation.stop()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chartData]) // Re-run the effect when 'chartData' data changes
 
   return <svg ref={svgRef}></svg>

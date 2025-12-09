@@ -2,6 +2,13 @@ import { Chip, Stack, Tooltip, Typography } from "@mui/material"
 import { Globe } from "@phosphor-icons/react"
 import { ReactNode } from "react"
 
+import { MonoFontFF } from "./RootLayout/fonts"
+
+// Use gradient primary start color for ArNS elements
+const ARNS_COLOR = "var(--gradient-primary-start)"
+// CSS variable approach for the hover background - will be set in globals.css
+const ARNS_BG_HOVER = "var(--gradient-primary-start-10, rgba(247, 195, 161, 0.1))"
+
 interface ArNSNameChipProps {
   name: string
   showIcon?: boolean
@@ -34,14 +41,14 @@ export function ArNSNameChip({
               <Globe
                 size={size === "small" ? 14 : 16}
                 weight="duotone"
-                style={{ color: "#1976d2" }}
+                style={{ color: ARNS_COLOR }}
               />
             )}
             <Typography
               variant="inherit"
               component="span"
               sx={{
-                fontFamily: "monospace",
+                fontFamily: MonoFontFF,
                 fontSize: size === "small" ? "0.75rem" : "0.875rem",
               }}
             >
@@ -54,14 +61,14 @@ export function ArNSNameChip({
         size={size}
         onClick={onClick}
         sx={{
-          backgroundColor: variant === "filled" ? "#e3f2fd" : "transparent",
-          borderColor: "#1976d2",
-          color: "#1976d2",
+          backgroundColor: variant === "filled" ? ARNS_BG_HOVER : "transparent",
+          borderColor: ARNS_COLOR,
+          color: ARNS_COLOR,
           "& .MuiChip-label": {
             padding: "2px 6px",
           },
           "&:hover": {
-            backgroundColor: "#e3f2fd",
+            backgroundColor: ARNS_BG_HOVER,
             cursor: onClick ? "pointer" : "default",
           },
         }}
@@ -93,7 +100,7 @@ export function ArNSNameDisplay({
       gap={0.5}
       sx={{
         display: inline ? "inline-flex" : "flex",
-        color: "#1976d2",
+        color: ARNS_COLOR,
         cursor: onClick ? "pointer" : "default",
         "&:hover": onClick
           ? {
@@ -103,12 +110,12 @@ export function ArNSNameDisplay({
       }}
       onClick={onClick}
     >
-      {showIcon && <Globe size={14} weight="duotone" style={{ color: "#1976d2" }} />}
+      {showIcon && <Globe size={14} weight="duotone" style={{ color: ARNS_COLOR }} />}
       <Typography
         variant="body2"
         component={inline ? "span" : "div"}
         sx={{
-          fontFamily: "monospace",
+          fontFamily: MonoFontFF,
           color: "inherit",
         }}
       >

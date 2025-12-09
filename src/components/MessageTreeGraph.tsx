@@ -32,10 +32,11 @@ interface MessageTreeProps {
   highlightPathColor?: string
 }
 
-const ERROR_COLOR = "#9e1111"
-const SUCCESS_COLOR = "#22bb33"
-const USUAL_COLOR = "#555"
-const USUAL_COLOR_2 = "#888"
+// Theme-aware colors that work in both light and dark modes
+const ERROR_COLOR = "#c93545" // error red
+const SUCCESS_COLOR = "#2d8a92" // success teal
+const USUAL_COLOR = "#707078" // medium grey
+const USUAL_COLOR_2 = "#8a8a94" // lighter grey
 
 export function MessageTreeGraph({
   data,
@@ -52,14 +53,14 @@ export function MessageTreeGraph({
   height = "400px",
   r = 3,
   padding = 1,
-  fill = "#999",
+  fill = USUAL_COLOR,
   fillOpacity,
-  stroke = "#555",
+  stroke = USUAL_COLOR,
   strokeWidth = 1.5,
   strokeOpacity = 0.4,
   strokeLinejoin,
   strokeLinecap,
-  halo = "#fff",
+  halo = "var(--mui-palette-background-paper, #1e1e24)",
   haloWidth = 3,
   curve = d3.curveBumpX,
   highlightPath = [],
@@ -369,11 +370,11 @@ export function MessageTreeGraph({
             position: "absolute",
             left: `${tooltip.x}px`,
             top: `${tooltip.y}px`,
-            background: "white",
-            border: "1px solid #ccc",
+            background: "var(--container-l3)",
+            border: "1px solid var(--divider)",
             padding: "8px",
-            borderRadius: "4px",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            borderRadius: "6px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
             zIndex: 1000,
             width: "400px",
             maxHeight: "80vh",
@@ -382,6 +383,7 @@ export function MessageTreeGraph({
             fontSize: "12px",
             lineHeight: "1.4",
             whiteSpace: "pre-wrap",
+            color: "var(--text-mid)",
           }}
         >
           <div
@@ -391,8 +393,10 @@ export function MessageTreeGraph({
               marginBottom: "8px",
               cursor: "move",
               padding: "4px",
-              background: "#f5f5f5",
-              borderBottom: "1px solid #ddd",
+              background: "var(--container-l0)",
+              borderBottom: "1px solid var(--divider)",
+              borderRadius: "4px 4px 0 0",
+              color: "var(--text-high)",
             }}
             onMouseDown={(e) => startDrag(e, id, Number(width), Number(height))}
           >
@@ -408,6 +412,7 @@ export function MessageTreeGraph({
                 cursor: "pointer",
                 fontSize: "14px",
                 fontWeight: "bold",
+                color: "var(--text-mid)",
               }}
             >
               ×

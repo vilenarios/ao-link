@@ -5,7 +5,7 @@ import React from "react"
 import { MonoFontFF } from "./RootLayout/fonts"
 import { getColorFromText } from "@/utils/color-utils"
 
-import { isArweaveId } from "@/utils/utils"
+import { isValidEntityId } from "@/utils/utils"
 
 export function TagChip(
   props: TypographyProps & { name: string; value: string; copyOnlyValue?: boolean },
@@ -13,19 +13,20 @@ export function TagChip(
   const { name, value, copyOnlyValue = false } = props
 
   const [copied, setCopied] = React.useState(false)
-  const valuesIsArweaveAddress = isArweaveId(value)
+  const valueIsEntityId = isValidEntityId(value)
 
   return (
     <Typography
       sx={{
         padding: 0.5,
-        color: "black",
+        borderRadius: "4px",
+        color: "var(--tag-text)",
         background: getColorFromText(name),
       }}
       variant="caption"
       fontFamily={MonoFontFF}
     >
-      {valuesIsArweaveAddress ? (
+      {valueIsEntityId ? (
         <a
           href={`/#/entity/${value}`}
           target="_blank"
@@ -54,14 +55,19 @@ export function TagChip(
           ml: 1,
           p: 0,
           transition: "opacity 0.3s, transform 0.3s",
-          color: "black",
+          color: "var(--tag-text)",
           "&:hover": {
             opacity: 1,
             transform: "scale(1.2)",
+            backgroundColor: "transparent",
           },
         }}
       >
-        {copied ? <Check fontSize="small" color="#000" /> : <Copy fontSize="small" color="#000" />}
+        {copied ? (
+          <Check fontSize="small" color="var(--tag-text)" />
+        ) : (
+          <Copy fontSize="small" color="var(--tag-text)" />
+        )}
       </IconButton>
     </Typography>
   )

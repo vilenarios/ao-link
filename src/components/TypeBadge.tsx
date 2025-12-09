@@ -20,6 +20,7 @@ export function TypeBadge(props: TypeBadgeProps) {
           background: TYPE_COLOR_MAP[type],
           padding: "4px 8px",
           width: "fit-content",
+          borderRadius: "4px",
         }}
         alignItems="center"
       >
@@ -27,7 +28,7 @@ export function TypeBadge(props: TypeBadgeProps) {
           textTransform="uppercase"
           variant="body2"
           fontFamily={MonoFontFF}
-          sx={{ color: "black" }}
+          sx={{ color: "var(--tag-text)" }}
         >
           {type}
         </Typography>

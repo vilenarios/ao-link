@@ -152,7 +152,7 @@ export function AsyncTable(props: AsyncTableProps) {
                   key={index}
                   align={cell.align}
                   sx={{
-                    color: "#9ea2aa",
+                    color: "var(--text-low)",
                     whiteSpace: "nowrap",
                     ...(cell.sx || {}),
                   }}

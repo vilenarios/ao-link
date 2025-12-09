@@ -2,6 +2,7 @@ import { Box, Stack } from "@mui/material"
 import { useNavigate } from "react-router-dom"
 
 import { EntityBlock } from "./EntityBlock"
+import { MonoFontFF } from "./RootLayout/fonts"
 import { useArnsLogo } from "@/hooks/useArnsLogo"
 import { usePrimaryArnsName } from "@/hooks/usePrimaryArnsName"
 
@@ -35,7 +36,7 @@ export function OwnerBlock(props: OwnerBlockProps) {
           onClick={handleArnsClick}
           sx={{
             cursor: "pointer",
-            color: "#1976d2",
+            color: "var(--gradient-primary-start)",
             "&:hover": {
               textDecoration: "underline",
             },
@@ -59,7 +60,7 @@ export function OwnerBlock(props: OwnerBlockProps) {
           )}
           <span
             style={{
-              fontFamily: "monospace",
+              fontFamily: MonoFontFF,
               fontSize: "0.875rem",
               color: "inherit",
             }}

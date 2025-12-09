@@ -263,9 +263,9 @@ const Header = () => {
                           component={Link}
                           to={item.path}
                           sx={{
-                            color: "#9EA2AA",
+                            color: "var(--text-mid)",
                             "&:hover": {
-                              color: "var(--mui-palette-text-primary)",
+                              color: "var(--text-high)",
                             },
                           }}
                           fontWeight={500}

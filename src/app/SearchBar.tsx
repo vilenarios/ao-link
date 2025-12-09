@@ -22,7 +22,7 @@ import { getRecordValue } from "@/services/arns-api"
 import { resolveArNSName } from "@/services/arns-service"
 import { getMessageById } from "@/services/messages-api"
 import { TYPE_PATH_MAP } from "@/utils/data-utils"
-import { isArweaveId } from "@/utils/utils"
+import { isArweaveId, isEthereumAddress } from "@/utils/utils"
 
 type ResultType = "Message" | "Process" | "ArNS" | "User"
 
@@ -80,10 +80,18 @@ async function findByText(text: string, abortSignal?: AbortSignal): Promise<Resu
 
   // Determine what type of search to perform based on input pattern
   const isLikelyArweaveId = isArweaveId(text) || text.length === 43
+  const isEthAddress = isEthereumAddress(text)
 
   const results: Result[] = []
 
-  if (isLikelyArweaveId) {
+  if (isEthAddress) {
+    // Input is an Ethereum address - add as User result
+    results.push({
+      label: `${text} (ETH User)`,
+      id: text,
+      type: "User" as ResultType,
+    })
+  } else if (isLikelyArweaveId) {
     // Input looks like an Arweave ID - search for messages and check if it's an ANT
     const [msg, isAnt] = await Promise.all([
       getMessageById(text).catch(() => null),
@@ -311,10 +319,7 @@ const SearchBar = () => {
         sx={{
           zIndex: 10,
           backdropFilter: "blur(4px)",
-          backgroundColor: "rgba(0, 0, 0, 0.1)",
-          'html[data-mui-color-scheme="dark"] &': {
-            backgroundColor: "rgba(255, 255, 255, 0.05)",
-          },
+          backgroundColor: "var(--transparent-100-64)", // Uses theme-aware backdrop
         }}
       />
     </Box>

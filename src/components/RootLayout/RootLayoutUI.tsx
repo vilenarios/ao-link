@@ -2,7 +2,10 @@
 
 import { Container, Stack } from "@mui/material"
 import CssBaseline from "@mui/material/CssBaseline"
-import { Experimental_CssVarsProvider as CssVarsProvider } from "@mui/material/styles"
+import {
+  Experimental_CssVarsProvider as CssVarsProvider,
+  getInitColorSchemeScript,
+} from "@mui/material/styles"
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
@@ -23,10 +26,12 @@ const queryClient = new QueryClient({
 export default function RootLayoutUI({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <CssVarsProvider theme={theme} defaultMode="light">
+      {/* Prevent flash of wrong color mode */}
+      {getInitColorSchemeScript({ defaultMode: "dark" })}
+      <CssVarsProvider theme={theme} defaultMode="dark">
         <CssBaseline />
         <ArweaveProvider>
-          <Stack>
+          <Stack sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
             <Header />
             <Container
               maxWidth="xl"

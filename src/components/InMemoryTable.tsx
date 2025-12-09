@@ -117,8 +117,7 @@ export function InMemoryTable(props: InMemoryTableProps) {
                   key={index}
                   align={cell.align}
                   sx={{
-                    color: "#9ea2aa",
-                    // background: "var(--mui-palette-background-default)",
+                    color: "var(--text-low)",
                     ...(cell.sx || {}),
                   }}
                 >
