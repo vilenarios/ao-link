@@ -95,11 +95,12 @@ export const GATEWAY_DATA = `https://${GATEWAY_DOMAIN}`
 
 /**
  * Get the URL for fetching transaction data using sandbox subdomain
+ * Format: https://{sandboxSubdomain}.{gateway}/{txId}
  * This is faster than using the path-based approach
  */
 export function getTxDataUrl(txId: string): string {
   const subdomain = txIdToSandboxSubdomain(txId)
-  return `https://${subdomain}.${GATEWAY_DOMAIN}`
+  return `https://${subdomain}.${GATEWAY_DOMAIN}/${txId}`
 }
 
 /**
