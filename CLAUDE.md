@@ -26,10 +26,12 @@ yarn deploy       # Deploy to Arweave permaweb
 - React 18 + TypeScript + Vite
 - MUI (Material-UI) for components
 - TanStack Query for data fetching/caching
-- React Router (HashRouter) for routing
+- React Router (HashRouter) for client-side routing - uses hash-based URLs for permaweb compatibility
 - urql for GraphQL client
 - nanostores for state management
 - Highcharts and D3 for data visualization
+- `@permaweb/aoconnect` for AO process interactions (dryrun, message sending)
+- `@ar.io/sdk` for ArNS operations and AR.IO network queries
 
 ### Directory Structure
 
@@ -80,3 +82,19 @@ The app heavily uses ArNS (Arweave Name Service) via `@ar.io/sdk`. Key hooks in 
 - `useArnsResolution` - Resolve ArNS names to transaction IDs
 - `usePrimaryArnsName` - Get primary name for an address
 - `useArnsForEntityId` - Check if an entity ID is an ArNS name
+
+### Wallet Integration
+
+Uses `@arweave-wallet-kit/react` for wallet connectivity. Supports multiple wallet strategies including Wander and browser wallets. The wallet context is available throughout the app via the ArweaveWalletKit provider.
+
+### Route Structure
+
+Routes use HashRouter for permaweb compatibility. Key routes:
+
+- `/` - Home page with network overview
+- `/entity/:entityId` - Process/entity details (redirects `/process` to AR.IO process)
+- `/message/:messageId` - Message details
+- `/module/:moduleId` - Module details (redirects `/module` to AR.IO module)
+- `/token/:tokenId` - Token details (redirects `/token` to AR.IO token)
+- `/arns` - ArNS records browser
+- `/blocks` and `/block/:blockHeight` - Block explorer
