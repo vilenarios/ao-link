@@ -27,17 +27,16 @@ export function UserPage(props: UserPageProps) {
   // so default to incoming messages for them
   const defaultTab = isEthUser ? "incoming" : "outgoing"
 
-  // Tabs that are not available for ETH users
-  const ethUnavailableTabs = ["outgoing", "spawned"]
+  // All tabs now work for ETH users:
+  // - Outgoing messages: via Sender tag query
+  // - Incoming messages: via Recipient tag query
+  // - Spawned processes: via normalized address lookup (from Pushed-For tag)
+  // - ARIO transfers: via Sender/Recipient tag queries
 
   const [searchParams, setSearchParams] = useSearchParams()
   const requestedTab = searchParams.get("tab")
 
-  // If ETH user has a tab in URL that's not available, fall back to default
-  const initialTab =
-    requestedTab && (!isEthUser || !ethUnavailableTabs.includes(requestedTab))
-      ? requestedTab
-      : defaultTab
+  const initialTab = requestedTab ?? defaultTab
 
   const [activeTab, setActiveTab] = useState(initialTab)
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -56,7 +55,7 @@ export function UserPage(props: UserPageProps) {
 
   return (
     <Stack component="main" gap={6} paddingY={4}>
-      <Subheading type={isEthUser ? "ETH USER" : "USER"} value={<IdBlock label={entityId} />} />
+      <Subheading type="USER" value={<IdBlock label={entityId} />} />
       <Stack gap={1}>
         <BalanceSection entityId={entityId} />
         <ArnsSection entityId={entityId} />
@@ -70,37 +69,27 @@ export function UserPage(props: UserPageProps) {
           scrollButtons="auto"
           allowScrollButtonsMobile
         >
-          {/* Outgoing messages and spawned processes require owner queries which need
-              the public key for ETH address normalization - not available from address alone */}
-          {!isEthUser && (
-            <TabWithCount value="outgoing" label="Outgoing messages" chipValue={outgoingCount} />
-          )}
+          <TabWithCount value="outgoing" label="Outgoing messages" chipValue={outgoingCount} />
           <TabWithCount value="incoming" label="Incoming messages" chipValue={incomingCount} />
-          {!isEthUser && (
-            <TabWithCount value="spawned" label="Spawned processes" chipValue={processesCount} />
-          )}
+          <TabWithCount value="spawned" label="Spawned processes" chipValue={processesCount} />
           <TabWithCount value="transfers" label="ARIO transfers" chipValue={transfersCount} />
         </Tabs>
         <Box sx={{ marginX: -2 }}>
-          {!isEthUser && (
-            <OutgoingMessagesTable
-              entityId={entityId}
-              open={activeTab === "outgoing"}
-              onCountReady={setOutgoingCount}
-            />
-          )}
+          <OutgoingMessagesTable
+            entityId={entityId}
+            open={activeTab === "outgoing"}
+            onCountReady={setOutgoingCount}
+          />
           <IncomingMessagesTable
             entityId={entityId}
             open={activeTab === "incoming"}
             onCountReady={setIncomingCount}
           />
-          {!isEthUser && (
-            <SpawnedProcesses
-              entityId={entityId}
-              open={activeTab === "spawned"}
-              onCountReady={setProcessesCount}
-            />
-          )}
+          <SpawnedProcesses
+            entityId={entityId}
+            open={activeTab === "spawned"}
+            onCountReady={setProcessesCount}
+          />
           <TokenTransfers
             entityId={entityId}
             open={activeTab === "transfers"}

@@ -2,13 +2,14 @@ import { result } from "@permaweb/aoconnect/browser"
 import { MessageResult } from "@permaweb/aoconnect/dist/lib/result"
 import { gql } from "urql"
 
+import { resolveEthToNormalizedAddress } from "./eth-normalization"
 import { goldsky } from "./graphql-client"
 import { ARIO_TOKEN_ID } from "@/config/ario"
 import { AoMessage, NetworkStat, TokenTransferMessage, TransactionsResponse } from "@/types"
 
 import { messageFields, parseAoMessage, parseTokenEvent } from "@/utils/arweave-utils"
 
-import { isArweaveId } from "@/utils/utils"
+import { isArweaveId, isEthereumAddress } from "@/utils/utils"
 
 // const AO_NETWORK_IDENTIFIER = '{ name: "SDK", values: ["aoconnect"] }'
 // const AO_NETWORK_IDENTIFIER = '{ name: "Variant", values: ["ao.TN.1"] }'
@@ -46,6 +47,32 @@ const outgoingMessagesQuery = (includeCount = false, isProcess?: boolean) => gql
   ${messageFields}
 `
 
+// Query for outgoing messages from ETH users via Sender tag
+const ethOutgoingMessagesQuery = (includeCount = false) => gql`
+  query (
+    $ethAddress: String!
+    $limit: Int!
+    $sortOrder: SortOrder!
+    $cursor: String
+  ) {
+    transactions(
+      sort: $sortOrder
+      first: $limit
+      after: $cursor
+      ${AO_MIN_INGESTED_AT}
+      tags: [
+        { name: "Sender", values: [$ethAddress] },
+        ${AO_NETWORK_IDENTIFIER}
+      ]
+    ) {
+      ${includeCount ? "count" : ""}
+      ...MessageFields
+    }
+  }
+
+  ${messageFields}
+`
+
 export async function getOutgoingMessages(
   limit = 100,
   cursor = "",
@@ -55,6 +82,11 @@ export async function getOutgoingMessages(
   isProcess?: boolean,
 ): Promise<[number | undefined, AoMessage[]]> {
   try {
+    // For ETH addresses, use tag-based query via Sender tag
+    if (isEthereumAddress(entityId) && !isProcess) {
+      return getOutgoingMessagesForEthUser(limit, cursor, ascending, entityId)
+    }
+
     const result = await goldsky
       .query<TransactionsResponse>(outgoingMessagesQuery(!cursor, isProcess), {
         limit,
@@ -73,6 +105,39 @@ export async function getOutgoingMessages(
 
     return [count, events]
   } catch (error) {
+    return [0, []]
+  }
+}
+
+/**
+ * Get outgoing messages for ETH users by querying Sender tag
+ */
+async function getOutgoingMessagesForEthUser(
+  limit: number,
+  cursor: string,
+  ascending: boolean,
+  ethAddress: string,
+): Promise<[number | undefined, AoMessage[]]> {
+  try {
+    const result = await goldsky
+      .query<TransactionsResponse>(ethOutgoingMessagesQuery(!cursor), {
+        limit,
+        sortOrder: ascending ? "HEIGHT_ASC" : "INGESTED_AT_DESC",
+        cursor,
+        ethAddress,
+      })
+      .toPromise()
+
+    const { data } = result
+
+    if (!data) return [0, []]
+
+    const { count, edges } = data.transactions
+    const events = edges.map(parseAoMessage)
+
+    return [count, events]
+  } catch (error) {
+    console.error("Error fetching outgoing messages for ETH user:", error)
     return [0, []]
   }
 }
@@ -104,6 +169,33 @@ const incomingMessagesQuery = (includeCount = false) => gql`
   ${messageFields}
 `
 
+// Query for messages where the ETH address is the Recipient tag (e.g., Credit-Notices they received)
+const ethIncomingByRecipientTagQuery = (includeCount = false) => gql`
+  query (
+    $ethAddress: String!
+    $limit: Int!
+    $sortOrder: SortOrder!
+    $cursor: String
+  ) {
+    transactions(
+      sort: $sortOrder
+      first: $limit
+      after: $cursor
+
+      tags: [
+        { name: "Recipient", values: [$ethAddress] },
+        ${AO_NETWORK_IDENTIFIER}
+      ]
+      ${AO_MIN_INGESTED_AT}
+    ) {
+      ${includeCount ? "count" : ""}
+      ...MessageFields
+    }
+  }
+
+  ${messageFields}
+`
+
 export async function getIncomingMessages(
   limit = 100,
   cursor = "",
@@ -112,6 +204,11 @@ export async function getIncomingMessages(
   entityId: string,
 ): Promise<[number | undefined, AoMessage[]]> {
   try {
+    // For ETH addresses, use tag-based query
+    if (isEthereumAddress(entityId)) {
+      return getIncomingMessagesForEthUser(limit, cursor, ascending, entityId)
+    }
+
     const result = await goldsky
       .query<TransactionsResponse>(incomingMessagesQuery(!cursor), {
         limit,
@@ -130,6 +227,39 @@ export async function getIncomingMessages(
 
     return [count, events]
   } catch (error) {
+    return [0, []]
+  }
+}
+
+/**
+ * Get incoming messages for ETH users by querying Recipient tag
+ */
+async function getIncomingMessagesForEthUser(
+  limit: number,
+  cursor: string,
+  ascending: boolean,
+  ethAddress: string,
+): Promise<[number | undefined, AoMessage[]]> {
+  try {
+    const result = await goldsky
+      .query<TransactionsResponse>(ethIncomingByRecipientTagQuery(!cursor), {
+        limit,
+        sortOrder: ascending ? "HEIGHT_ASC" : "INGESTED_AT_DESC",
+        cursor,
+        ethAddress,
+      })
+      .toPromise()
+
+    const { data } = result
+
+    if (!data) return [0, []]
+
+    const { count, edges } = data.transactions
+    const events = edges.map(parseAoMessage)
+
+    return [count, events]
+  } catch (error) {
+    console.error("Error fetching incoming messages for ETH user:", error)
     return [0, []]
   }
 }
@@ -162,6 +292,64 @@ const tokenTransfersQuery = (includeCount = false) => gql`
   ${messageFields}
 `
 
+// Query for Credit-Notices where the ETH address is the Sender (they sent tokens)
+const ethCreditNoticesQuery = (includeCount = false) => gql`
+  query (
+    $ethAddress: String!
+    $limit: Int!
+    $sortOrder: SortOrder!
+    $cursor: String
+  ) {
+    transactions(
+      sort: $sortOrder
+      first: $limit
+      after: $cursor
+
+      tags: [
+        { name: "Action", values: ["Credit-Notice"] },
+        { name: "Sender", values: [$ethAddress] },
+        { name: "From-Process", values: ["${ARIO_TOKEN_ID}"] },
+        ${AO_NETWORK_IDENTIFIER}
+      ]
+      ${AO_MIN_INGESTED_AT}
+    ) {
+      ${includeCount ? "count" : ""}
+      ...MessageFields
+    }
+  }
+
+  ${messageFields}
+`
+
+// Query for Debit-Notices where the ETH address is the Recipient (they received tokens)
+const ethDebitNoticesQuery = (includeCount = false) => gql`
+  query (
+    $ethAddress: String!
+    $limit: Int!
+    $sortOrder: SortOrder!
+    $cursor: String
+  ) {
+    transactions(
+      sort: $sortOrder
+      first: $limit
+      after: $cursor
+
+      tags: [
+        { name: "Action", values: ["Debit-Notice"] },
+        { name: "Recipient", values: [$ethAddress] },
+        { name: "From-Process", values: ["${ARIO_TOKEN_ID}"] },
+        ${AO_NETWORK_IDENTIFIER}
+      ]
+      ${AO_MIN_INGESTED_AT}
+    ) {
+      ${includeCount ? "count" : ""}
+      ...MessageFields
+    }
+  }
+
+  ${messageFields}
+`
+
 export async function getTokenTransfers(
   limit = 100,
   cursor = "",
@@ -170,6 +358,11 @@ export async function getTokenTransfers(
   entityId: string,
 ): Promise<[number | undefined, TokenTransferMessage[]]> {
   try {
+    // For ETH addresses, use tag-based queries instead of recipients
+    if (isEthereumAddress(entityId)) {
+      return getTokenTransfersForEthUser(limit, cursor, ascending, entityId)
+    }
+
     const result = await goldsky
       .query<TransactionsResponse>(tokenTransfersQuery(!cursor), {
         limit,
@@ -188,6 +381,64 @@ export async function getTokenTransfers(
 
     return [count, events]
   } catch (error) {
+    return [0, []]
+  }
+}
+
+/**
+ * Get token transfers for ETH users by querying Sender/Recipient tags
+ * Since ETH addresses aren't stored in the recipients field, we need to query by tags
+ */
+async function getTokenTransfersForEthUser(
+  limit: number,
+  cursor: string,
+  ascending: boolean,
+  ethAddress: string,
+): Promise<[number | undefined, TokenTransferMessage[]]> {
+  try {
+    // Query both Credit-Notices (where they sent) and Debit-Notices (where they received)
+    // Run both queries in parallel
+    const [creditResult, debitResult] = await Promise.all([
+      goldsky
+        .query<TransactionsResponse>(ethCreditNoticesQuery(!cursor), {
+          limit,
+          sortOrder: ascending ? "HEIGHT_ASC" : "INGESTED_AT_DESC",
+          cursor,
+          ethAddress,
+        })
+        .toPromise(),
+      goldsky
+        .query<TransactionsResponse>(ethDebitNoticesQuery(!cursor), {
+          limit,
+          sortOrder: ascending ? "HEIGHT_ASC" : "INGESTED_AT_DESC",
+          cursor,
+          ethAddress,
+        })
+        .toPromise(),
+    ])
+
+    const creditEdges = creditResult.data?.transactions.edges ?? []
+    const debitEdges = debitResult.data?.transactions.edges ?? []
+
+    // Combine and sort by ingested_at
+    const allEdges = [...creditEdges, ...debitEdges]
+    allEdges.sort((a, b) => {
+      const timeA = a.node.ingested_at ?? 0
+      const timeB = b.node.ingested_at ?? 0
+      return ascending ? timeA - timeB : timeB - timeA
+    })
+
+    // Take only the first 'limit' results
+    const limitedEdges = allEdges.slice(0, limit)
+    const events = limitedEdges.map(parseTokenEvent)
+
+    // Use the actual count of merged results (more accurate than sum of both queries)
+    // The sum would double-count since Credit + Debit both exist for each transfer
+    const totalCount = allEdges.length
+
+    return [totalCount, events]
+  } catch (error) {
+    console.error("Error fetching token transfers for ETH user:", error)
     return [0, []]
   }
 }
@@ -232,13 +483,17 @@ export async function getSpawnedProcesses(
   isProcess?: boolean,
 ): Promise<[number | undefined, AoMessage[]]> {
   try {
+    // For ETH users, we need to resolve their normalized address
+    // The owners query requires the Arweave-normalized address, not the ETH address
+    const resolvedEntityId = isProcess ? entityId : await resolveEthToNormalizedAddress(entityId)
+
     const result = await goldsky
       .query<TransactionsResponse>(spawnedProcessesQuery(!cursor, isProcess), {
         limit,
         sortOrder: ascending ? "HEIGHT_ASC" : "INGESTED_AT_DESC",
         cursor,
         //
-        entityId,
+        entityId: resolvedEntityId,
       })
       .toPromise()
     const { data } = result
@@ -817,6 +1072,11 @@ export async function getEvalMessages(
   entityId: string,
 ): Promise<[number | undefined, AoMessage[]]> {
   try {
+    // ETH users won't have eval messages (requires owner-based queries)
+    if (isEthereumAddress(entityId)) {
+      return [0, []]
+    }
+
     const result = await goldsky
       .query<TransactionsResponse>(evalMessagesQuery(!cursor), {
         limit,
@@ -909,6 +1169,11 @@ export async function getOwnedDomainsHistory(
   entityId: string,
 ): Promise<[number | undefined, AoMessage[]]> {
   try {
+    // ETH users won't have owned domains history via recipients query
+    if (isEthereumAddress(entityId)) {
+      return [0, []]
+    }
+
     const result = await goldsky
       .query<TransactionsResponse>(ownedDomainsQuery(!cursor), {
         limit,
