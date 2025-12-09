@@ -76,13 +76,29 @@ export function ProcessPage(props: ProcessPageProps) {
 
     const entityIds = Array.from(entityIdsSet)
 
-    Promise.all(entityIds.map(getMessageById)).then((entitiesArray) => {
-      const newEntities = Object.fromEntries(
-        entitiesArray.filter((x): x is AoMessage => x != null).map((x) => [x.id, x]),
-      )
+    // Track if effect is still active
+    let isCancelled = false
 
-      setEntities((prev) => ({ ...prev, ...newEntities }))
-    })
+    Promise.all(entityIds.map(getMessageById))
+      .then((entitiesArray) => {
+        // Don't update state if component unmounted
+        if (isCancelled) return
+
+        const newEntities = Object.fromEntries(
+          entitiesArray.filter((x): x is AoMessage => x != null).map((x) => [x.id, x]),
+        )
+
+        setEntities((prev) => ({ ...prev, ...newEntities }))
+      })
+      .catch((error) => {
+        if (isCancelled) return
+        console.error("[ProcessPage] Failed to fetch entities:", error)
+      })
+
+    // Cleanup function
+    return () => {
+      isCancelled = true
+    }
   }, [outgoingMessages])
 
   const graphData = useMemo<ChartDataItem[] | null>(() => {

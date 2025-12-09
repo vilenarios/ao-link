@@ -91,16 +91,32 @@ export function MessagePage() {
 
     const entityIds = Array.from(entityIdsSet)
 
-    Promise.all(entityIds.map(getMessageById)).then((entitiesArray) => {
-      const newEntities = Object.fromEntries(
-        entitiesArray
-          .filter((x): x is AoMessage => x !== undefined && x !== null)
-          .map((x) => [x.id, x]),
-      )
+    // Track if effect is still active
+    let isCancelled = false
 
-      setEntities((prev) => ({ ...prev, ...newEntities }))
-    })
-  }, [graphMessages])
+    Promise.all(entityIds.map(getMessageById))
+      .then((entitiesArray) => {
+        // Don't update state if component unmounted
+        if (isCancelled) return
+
+        const newEntities = Object.fromEntries(
+          entitiesArray
+            .filter((x): x is AoMessage => x !== undefined && x !== null)
+            .map((x) => [x.id, x]),
+        )
+
+        setEntities((prev) => ({ ...prev, ...newEntities }))
+      })
+      .catch((error) => {
+        if (isCancelled) return
+        console.error("[MessagePage] Failed to fetch entities:", error)
+      })
+
+    // Cleanup function
+    return () => {
+      isCancelled = true
+    }
+  }, [graphMessages, message])
 
   const graphData = useMemo<ChartDataItem[] | null>(() => {
     if (!message || graphMessages === null || !entities) return null

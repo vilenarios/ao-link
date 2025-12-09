@@ -103,33 +103,64 @@ export function parseAoMessage(edge: TransactionEdge): AoMessage {
   }
 }
 
+/**
+ * Safely parse a quantity string to a number.
+ * Returns 0 if the value is missing or invalid.
+ */
+function parseQuantity(value: string | undefined): number {
+  if (value === undefined || value === null || value === "") {
+    console.warn("[parseTokenEvent] Missing Quantity tag")
+    return 0
+  }
+  const num = Number(value)
+  if (isNaN(num)) {
+    console.warn(`[parseTokenEvent] Invalid Quantity: ${value}`)
+    return 0
+  }
+  return num
+}
+
 export function parseTokenEvent(edge: TransactionEdge): TokenTransferMessage {
   const aoMessage = parseAoMessage(edge)
 
   const { id, ingestedAt, action, from, to, tags } = aoMessage
 
-  let sender
-  let recipient
-  let tokenId
+  let sender: string = ""
+  let recipient: string = ""
+  let tokenId: string = ""
   let amount = 0
 
+  const quantity = parseQuantity(tags["Quantity"])
+
   if (action === "Debit-Notice") {
-    amount = -Number(tags["Quantity"])
+    amount = -quantity
     sender = to
-    recipient = tags["Recipient"]
+    recipient = tags["Recipient"] ?? ""
     tokenId = from
   } else if (action === "Credit-Notice") {
-    amount = Number(tags["Quantity"])
-    sender = tags["Sender"]
+    amount = quantity
+    sender = tags["Sender"] ?? ""
     recipient = to
     tokenId = from
   } else if (action === "Transfer") {
-    amount = -Number(tags["Quantity"])
+    amount = -quantity
     sender = from
-    recipient = tags["Recipient"]
+    recipient = tags["Recipient"] ?? ""
     tokenId = to
   } else {
-    throw new Error(`Unknown action: ${action}`)
+    // Return safe default instead of throwing to avoid breaking entire list
+    console.warn(`[parseTokenEvent] Unknown action: ${action}`)
+    return {
+      id,
+      type: "Message",
+      cursor: edge.cursor,
+      ingestedAt,
+      action,
+      sender: "",
+      recipient: "",
+      amount: 0,
+      tokenId: "",
+    }
   }
 
   return {

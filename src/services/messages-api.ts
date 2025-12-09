@@ -79,6 +79,7 @@ export async function getOutgoingMessages(
 
     return [count, events]
   } catch (error) {
+    console.error("[getOutgoingMessages] Error:", error)
     return [0, []]
   }
 }
@@ -168,6 +169,7 @@ export async function getIncomingMessages(
 
     return [count, events]
   } catch (error) {
+    console.error("[getIncomingMessages] Error:", error)
     return [0, []]
   }
 }
@@ -322,6 +324,7 @@ export async function getTokenTransfers(
 
     return [count, events]
   } catch (error) {
+    console.error("[getTokenTransfers] Error:", error)
     return [0, []]
   }
 }
@@ -446,6 +449,7 @@ export async function getSpawnedProcesses(
 
     return [count, events]
   } catch (error) {
+    console.error("[getSpawnedProcesses] Error:", error)
     return [0, []]
   }
 }
@@ -530,6 +534,7 @@ export async function getProcesses(
 
     return [count, records]
   } catch (error) {
+    console.error("[getProcesses] Error:", error)
     return [0, []]
   }
 }
@@ -583,6 +588,7 @@ export async function getModules(
 
     return [count, events]
   } catch (error) {
+    console.error("[getModules] Error:", error)
     return [0, []]
   }
 }
@@ -645,6 +651,7 @@ export async function getResultingMessages(
 
     return [count, events]
   } catch (error) {
+    console.error("[getResultingMessages] Error:", error)
     return [0, []]
   }
 }
@@ -787,6 +794,7 @@ export async function getLinkedMessages(
 
     return [count, events]
   } catch (error) {
+    console.error("[getLinkedMessages] Error:", error)
     return [0, []]
   }
 }
@@ -845,6 +853,7 @@ export async function getArioMessagesForBlock(
 
     return [count, events]
   } catch (error) {
+    console.error("[getArioMessagesForBlock] Error:", error)
     return [0, []]
   }
 }
@@ -930,6 +939,7 @@ export async function getArioMessages(
 
     return [incomingData.transactions.count, incomingEvents]
   } catch (error) {
+    console.error("[getArioMessages] Error:", error)
     return [0, []]
   }
 }
@@ -974,6 +984,7 @@ export async function getAllMessages(
 
     return [count, events]
   } catch (error) {
+    console.error("[getAllMessages] Error:", error)
     return [0, []]
   }
 }
@@ -1036,6 +1047,7 @@ export async function getEvalMessages(
 
     return [count, events]
   } catch (error) {
+    console.error("[getEvalMessages] Error:", error)
     return [0, []]
   }
 }
@@ -1069,7 +1081,7 @@ export async function getNetworkStats(): Promise<NetworkStat[]> {
 
     return json as NetworkStat[]
   } catch (error) {
-    console.error(error)
+    console.error("[getNetworkStats] Error:", error)
     return []
   }
 }
@@ -1133,6 +1145,7 @@ export async function getOwnedDomainsHistory(
 
     return [count, events]
   } catch (error) {
+    console.error("[getOwnedDomainsHistory] Error:", error)
     return [0, []]
   }
 }
@@ -1191,6 +1204,7 @@ export async function getSetRecordsToEntityId(
 
     return [count, events]
   } catch (error) {
+    console.error("[getSetRecordsToEntityId] Error:", error)
     return [0, []]
   }
 }
@@ -1317,6 +1331,7 @@ export const fetchMessageGraph = async (
 
     return head
   } catch (error) {
+    console.error("[fetchMessageGraph] Error:", error)
     return null
   }
 }

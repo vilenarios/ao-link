@@ -7,15 +7,6 @@ export function formatRelative(date: Date) {
   return distance
 }
 
-export function parseUtcString(dateString: string): Date {
-  const date = new Date(dateString)
-
-  const utcTimezoneOffsetHours = -(date.getTimezoneOffset() / 60)
-  date.setHours(date.getHours() + utcTimezoneOffsetHours)
-
-  return date
-}
-
 export function formatFullDate(date: Date) {
   if (!date) return
 

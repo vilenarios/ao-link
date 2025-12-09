@@ -50,8 +50,7 @@ function BaseResultingMessages(props: Props) {
         }
 
         if (onDataReady) {
-          // onDataReady(records)
-          onDataReady([])
+          onDataReady(records)
         }
 
         return records
@@ -60,5 +59,4 @@ function BaseResultingMessages(props: Props) {
   )
 }
 
-// TODO FIXME
 export const ResultingMessages = memo(BaseResultingMessages)
