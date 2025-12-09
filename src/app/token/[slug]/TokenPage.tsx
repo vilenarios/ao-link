@@ -1,6 +1,6 @@
 import { Avatar, Box, Paper, Skeleton, Stack, Tab, Tabs, Tooltip, Typography } from "@mui/material"
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2"
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Navigate, useParams, useSearchParams } from "react-router-dom"
 
 import { TokenHolderChart } from "./TokenHolderChart"
@@ -14,9 +14,8 @@ import { SectionInfo } from "@/components/SectionInfo"
 import { Subheading } from "@/components/Subheading"
 import { TokenAmountBlock } from "@/components/TokenAmountBlock"
 import { ARIO_TOKEN_ID } from "@/config/ario"
-import { useTokenInfo } from "@/hooks/useTokenInfo"
 import { TokenHolder, getTokenHolders } from "@/services/token-api"
-import { getTokenLogoUrl } from "@/utils/native-token"
+import { getTokenLogoUrl, nativeTokenInfo } from "@/utils/native-token"
 import { isArweaveId } from "@/utils/utils"
 
 const defaultTab = "table"
@@ -24,21 +23,17 @@ const defaultTab = "table"
 export default function TokenPage() {
   const { tokenId } = useParams()
 
-  // Always call hooks unconditionally (React rules of hooks)
-  const tokenInfo = useTokenInfo(tokenId === ARIO_TOKEN_ID ? tokenId : undefined)
-
   // Redirect to AR.IO token if a different token is requested
   if (tokenId && tokenId !== ARIO_TOKEN_ID) {
     return <Navigate to={`/token/${ARIO_TOKEN_ID}`} replace />
   }
 
+  const tokenInfo = nativeTokenInfo
   const [tokenHolders, setTokenHolders] = useState<TokenHolder[]>()
 
   useEffect(() => {
-    if (!tokenInfo) return
-
-    getTokenHolders(tokenInfo).then(setTokenHolders)
-  }, [tokenInfo])
+    getTokenHolders().then(setTokenHolders)
+  }, [])
 
   const [searchParams, setSearchParams] = useSearchParams()
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || defaultTab)
@@ -51,17 +46,8 @@ export default function TokenPage() {
     }
   }
 
-  const errorMessage = useMemo(() => {
-    if (!isArweaveId(String(tokenId))) {
-      return "Invalid Process ID."
-    }
-    if (tokenInfo === null) {
-      return "Cannot read Token Info."
-    }
-  }, [tokenId, tokenInfo])
-
-  if (!tokenId || tokenInfo === null || errorMessage) {
-    return <ErrorView message={errorMessage || "Invalid token"} />
+  if (!tokenId || !isArweaveId(tokenId)) {
+    return <ErrorView message="Invalid Process ID." />
   }
 
   return (
@@ -70,29 +56,25 @@ export default function TokenPage() {
         <Subheading type="TOKEN" value={<IdBlock label={tokenId} />} />
         <Grid2 container spacing={{ xs: 4 }}>
           <Grid2 xs={12} lg={6}>
-            {tokenInfo === undefined ? (
-              <Skeleton height={48} variant="rectangular" />
-            ) : (
-              <Stack direction="row" gap={1} alignItems="center">
-                <Avatar
-                  src={getTokenLogoUrl(tokenInfo.logo)}
-                  alt={tokenInfo.name}
-                  sx={{ width: 48, height: 48 }}
-                />
-                <Stack>
-                  <Tooltip title="Name" placement="right">
-                    <Typography variant="h6" lineHeight={1.15}>
-                      {tokenInfo.name}
-                    </Typography>
-                  </Tooltip>
-                  <Tooltip title="Ticker" placement="right">
-                    <Typography variant="body2" lineHeight={1.15} color="text.secondary">
-                      {tokenInfo.ticker}
-                    </Typography>
-                  </Tooltip>
-                </Stack>
+            <Stack direction="row" gap={1} alignItems="center">
+              <Avatar
+                src={getTokenLogoUrl(tokenInfo.logo)}
+                alt={tokenInfo.name}
+                sx={{ width: 48, height: 48 }}
+              />
+              <Stack>
+                <Tooltip title="Name" placement="right">
+                  <Typography variant="h6" lineHeight={1.15}>
+                    {tokenInfo.name}
+                  </Typography>
+                </Tooltip>
+                <Tooltip title="Ticker" placement="right">
+                  <Typography variant="body2" lineHeight={1.15} color="text.secondary">
+                    {tokenInfo.ticker}
+                  </Typography>
+                </Tooltip>
               </Stack>
-            )}
+            </Stack>
           </Grid2>
           <Grid2 xs={12} lg={6}>
             {tokenHolders === undefined ? (
@@ -119,7 +101,7 @@ export default function TokenPage() {
             <Tab value="chart" label="Token Holders Chart" />
           </Tabs>
           <Box sx={{ marginX: -2 }}>
-            {tokenHolders === undefined || !tokenInfo ? (
+            {tokenHolders === undefined ? (
               <PageSkeleton />
             ) : (
               <Paper>

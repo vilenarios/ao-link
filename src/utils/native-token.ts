@@ -9,8 +9,6 @@ export const nativeTokenInfo: TokenInfo = {
   name: "ARIO",
 }
 
-export const tokenMirrors: Record<string, string> = {}
-
 /**
  * Returns the full URL for a token logo.
  * If the logo starts with "/" or "http", it's used as-is.

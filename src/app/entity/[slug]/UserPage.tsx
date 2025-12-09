@@ -19,11 +19,13 @@ type UserPageProps = {
   entityId: UserAddress
 }
 
-const defaultTab = "outgoing"
-
 export function UserPage(props: UserPageProps) {
   const { entityId } = props
   const isEthUser = isEthereumAddress(entityId)
+
+  // ETH users can't query by owner (requires public key for normalization),
+  // so default to incoming messages for them
+  const defaultTab = isEthUser ? "incoming" : "outgoing"
 
   const [searchParams, setSearchParams] = useSearchParams()
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || defaultTab)
@@ -57,34 +59,42 @@ export function UserPage(props: UserPageProps) {
           scrollButtons="auto"
           allowScrollButtonsMobile
         >
-          <TabWithCount value="outgoing" label="Outgoing messages" chipValue={outgoingCount} />
+          {/* Outgoing messages and spawned processes require owner queries which need
+              the public key for ETH address normalization - not available from address alone */}
+          {!isEthUser && (
+            <TabWithCount value="outgoing" label="Outgoing messages" chipValue={outgoingCount} />
+          )}
           <TabWithCount value="incoming" label="Incoming messages" chipValue={incomingCount} />
-          <TabWithCount value="spawned" label="Spawned processes" chipValue={processesCount} />
+          {!isEthUser && (
+            <TabWithCount value="spawned" label="Spawned processes" chipValue={processesCount} />
+          )}
           <TabWithCount value="transfers" label="ARIO transfers" chipValue={transfersCount} />
-          {/* <Tab value="arns" label="ArNS" /> */}
         </Tabs>
         <Box sx={{ marginX: -2 }}>
-          <OutgoingMessagesTable
-            entityId={entityId}
-            open={activeTab === "outgoing"}
-            onCountReady={setOutgoingCount}
-          />
+          {!isEthUser && (
+            <OutgoingMessagesTable
+              entityId={entityId}
+              open={activeTab === "outgoing"}
+              onCountReady={setOutgoingCount}
+            />
+          )}
           <IncomingMessagesTable
             entityId={entityId}
             open={activeTab === "incoming"}
             onCountReady={setIncomingCount}
           />
-          <SpawnedProcesses
-            entityId={entityId}
-            open={activeTab === "spawned"}
-            onCountReady={setProcessesCount}
-          />
+          {!isEthUser && (
+            <SpawnedProcesses
+              entityId={entityId}
+              open={activeTab === "spawned"}
+              onCountReady={setProcessesCount}
+            />
+          )}
           <TokenTransfers
             entityId={entityId}
             open={activeTab === "transfers"}
             onCountReady={setTransfersCount}
           />
-          {/* <ArDomains entityId={entityId} open={activeTab === "arns"} /> */}
         </Box>
       </div>
     </Stack>

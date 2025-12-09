@@ -2,17 +2,16 @@ import { Box, Link, Skeleton, Tooltip } from "@mui/material"
 import React, { useCallback, useEffect } from "react"
 
 import { TokenAmountBlock } from "./TokenAmountBlock"
-import { TokenInfo, getBalance } from "@/services/token-api"
-
+import { getBalance } from "@/services/token-api"
+import { nativeTokenInfo } from "@/utils/native-token"
 import { timeout } from "@/utils/utils"
 
 type RetryableBalanceProps = {
   entityId: string
-  tokenInfo: TokenInfo
 }
 
 export function RetryableBalance(props: RetryableBalanceProps) {
-  const { entityId, tokenInfo } = props
+  const { entityId } = props
 
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState("")
@@ -21,7 +20,7 @@ export function RetryableBalance(props: RetryableBalanceProps) {
   const fetchBalance = useCallback(async () => {
     setLoading(true)
     setError("")
-    Promise.race([getBalance(tokenInfo.processId, entityId), timeout(60_000)])
+    Promise.race([getBalance(entityId), timeout(60_000)])
       .then((balance) => {
         setBalance(balance as number)
       })
@@ -29,7 +28,7 @@ export function RetryableBalance(props: RetryableBalanceProps) {
         setError(String(error))
       })
       .finally(() => setLoading(false))
-  }, [entityId, tokenInfo.processId])
+  }, [entityId])
 
   useEffect(() => {
     fetchBalance()
@@ -46,7 +45,7 @@ export function RetryableBalance(props: RetryableBalanceProps) {
           </Link>
         </Tooltip>
       ) : (
-        <TokenAmountBlock amount={balance} tokenInfo={tokenInfo} needsParsing />
+        <TokenAmountBlock amount={balance} tokenInfo={nativeTokenInfo} needsParsing />
       )}
     </Box>
   )

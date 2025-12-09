@@ -8,7 +8,7 @@ import { AoMessage, NetworkStat, TokenTransferMessage, TransactionsResponse } fr
 
 import { messageFields, parseAoMessage, parseTokenEvent } from "@/utils/arweave-utils"
 
-import { isArweaveId, normalizeAddressForOwner } from "@/utils/utils"
+import { isArweaveId } from "@/utils/utils"
 
 // const AO_NETWORK_IDENTIFIER = '{ name: "SDK", values: ["aoconnect"] }'
 // const AO_NETWORK_IDENTIFIER = '{ name: "Variant", values: ["ao.TN.1"] }'
@@ -55,16 +55,13 @@ export async function getOutgoingMessages(
   isProcess?: boolean,
 ): Promise<[number | undefined, AoMessage[]]> {
   try {
-    // Normalize Ethereum addresses for owner queries (when not a process)
-    const normalizedEntityId = isProcess ? entityId : await normalizeAddressForOwner(entityId)
-
     const result = await goldsky
       .query<TransactionsResponse>(outgoingMessagesQuery(!cursor, isProcess), {
         limit,
         sortOrder: ascending ? "HEIGHT_ASC" : "INGESTED_AT_DESC",
         cursor,
         //
-        entityId: normalizedEntityId,
+        entityId,
       })
       .toPromise()
     const { data } = result
@@ -235,16 +232,13 @@ export async function getSpawnedProcesses(
   isProcess?: boolean,
 ): Promise<[number | undefined, AoMessage[]]> {
   try {
-    // Normalize Ethereum addresses for owner queries (when not a process)
-    const normalizedEntityId = isProcess ? entityId : await normalizeAddressForOwner(entityId)
-
     const result = await goldsky
       .query<TransactionsResponse>(spawnedProcessesQuery(!cursor, isProcess), {
         limit,
         sortOrder: ascending ? "HEIGHT_ASC" : "INGESTED_AT_DESC",
         cursor,
         //
-        entityId: normalizedEntityId,
+        entityId,
       })
       .toPromise()
     const { data } = result

@@ -22,7 +22,7 @@ export function BalanceSection(props: BalanceSectionProps) {
       title="Balance"
       value={
         <Stack direction="row" gap={1} alignItems="center">
-          <RetryableBalance entityId={entityId} tokenInfo={nativeTokenInfo} />
+          <RetryableBalance entityId={entityId} />
           {tokenInfo && (
             <Avatar
               src={getTokenLogoUrl(tokenInfo.logo)}
