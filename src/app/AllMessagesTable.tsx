@@ -19,8 +19,8 @@ function BaseAllMessagesTable(props: EntityMessagesProps) {
   return (
     <EntityMessagesTable
       entityId={ARIO_PROCESS_ID}
-      allowTypeFilter
       pageSize={pageSize}
+      allowActionFilter
       fetchFunction={async (offset, ascending, sortField, lastRecord, extraFilters) => {
         const [count, records] = await getArioMessages(
           ARIO_PROCESS_ID,

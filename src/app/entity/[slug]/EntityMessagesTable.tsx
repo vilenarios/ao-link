@@ -1,16 +1,18 @@
 import {
   Box,
   IconButton,
+  ListSubheader,
   Menu,
   MenuItem,
   Paper,
   Stack,
   TableCell,
   TableRow,
+  TextField,
   Tooltip,
 } from "@mui/material"
 import { FunnelSimple, Info } from "@phosphor-icons/react"
-import React, { useState } from "react"
+import React, { useMemo, useState } from "react"
 
 import { useNavigate } from "react-router-dom"
 
@@ -19,6 +21,7 @@ import { IdBlock } from "@/components/IdBlock"
 import { InOutLabel } from "@/components/InOutLabel"
 import { TableEntityBlock } from "@/components/TableEntityBlock"
 import { TypeBadge } from "@/components/TypeBadge"
+import { ARIO_ACTIONS } from "@/config/ario"
 import { AoMessage, MSG_TYPES } from "@/types"
 import { TYPE_ICON_MAP, TYPE_PATH_MAP, truncateId } from "@/utils/data-utils"
 import { formatFullDate, formatRelative } from "@/utils/date-utils"
@@ -28,13 +31,14 @@ type EntityMessagesTableProps = Pick<AsyncTableProps, "fetchFunction" | "pageSiz
   entityId?: string
   hideBlockColumn?: boolean
   allowTypeFilter?: boolean
+  allowActionFilter?: boolean
 }
 
 /**
  * TODO rename to AoTransactionsTable
  */
 export function EntityMessagesTable(props: EntityMessagesTableProps) {
-  const { entityId, hideBlockColumn, allowTypeFilter, ...rest } = props
+  const { entityId, hideBlockColumn, allowTypeFilter, allowActionFilter, ...rest } = props
   const navigate = useNavigate()
 
   const [extraFilters, setExtraFilters] = useState<Record<string, string>>({})
@@ -46,6 +50,24 @@ export function EntityMessagesTable(props: EntityMessagesTableProps) {
   const handleFilterTypeClose = () => {
     setFilterTypeAnchor(null)
   }
+
+  // Action filter state
+  const [filterActionAnchor, setFilterActionAnchor] = useState<null | HTMLElement>(null)
+  const [actionSearchText, setActionSearchText] = useState("")
+  const handleFilterActionClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setFilterActionAnchor(event.currentTarget)
+  }
+  const handleFilterActionClose = () => {
+    setFilterActionAnchor(null)
+    setActionSearchText("")
+  }
+
+  // Filter actions based on search text
+  const filteredActions = useMemo(() => {
+    if (!actionSearchText) return ARIO_ACTIONS
+    const searchLower = actionSearchText.toLowerCase()
+    return ARIO_ACTIONS.filter((action) => action.toLowerCase().includes(searchLower))
+  }, [actionSearchText])
 
   const headerCells: HeaderCell[] = [
     {
@@ -96,7 +118,80 @@ export function EntityMessagesTable(props: EntityMessagesTableProps) {
       sx: { width: 140 },
     },
     { label: "ID", sx: { width: 240 } },
-    { label: "Action" },
+    {
+      label: !allowActionFilter ? (
+        "Action"
+      ) : (
+        <Stack direction="row" gap={0.5} sx={{ marginY: -1 }} alignItems="center">
+          <span>Action</span>
+          <Tooltip title={"Filter by action"}>
+            <IconButton size="small" onClick={handleFilterActionClick}>
+              <FunnelSimple
+                width={18}
+                height={18}
+                weight={extraFilters.Action ? "fill" : "regular"}
+              />
+            </IconButton>
+          </Tooltip>
+          <Menu
+            anchorEl={filterActionAnchor}
+            open={Boolean(filterActionAnchor)}
+            onClose={handleFilterActionClose}
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            transformOrigin={{ vertical: "top", horizontal: "center" }}
+            slotProps={{
+              paper: {
+                sx: { maxHeight: 400 },
+              },
+            }}
+          >
+            <ListSubheader
+              sx={{
+                pt: 1,
+                pb: 1,
+                backgroundColor: "background.paper",
+              }}
+            >
+              <TextField
+                size="small"
+                autoFocus
+                placeholder="Search actions..."
+                fullWidth
+                value={actionSearchText}
+                onChange={(e) => setActionSearchText(e.target.value)}
+                onKeyDown={(e) => {
+                  e.stopPropagation()
+                }}
+              />
+            </ListSubheader>
+            <MenuItem
+              onClick={() => {
+                handleFilterActionClose()
+                setExtraFilters((prev) => {
+                  const { Action, ...rest } = prev
+                  return rest
+                })
+              }}
+              selected={!extraFilters.Action}
+            >
+              <i>All</i>
+            </MenuItem>
+            {filteredActions.map((action) => (
+              <MenuItem
+                key={action}
+                onClick={() => {
+                  handleFilterActionClose()
+                  setExtraFilters((prev) => ({ ...prev, Action: action }))
+                }}
+                selected={extraFilters.Action === action}
+              >
+                {action}
+              </MenuItem>
+            ))}
+          </Menu>
+        </Stack>
+      ),
+    },
     { label: "From", sx: { width: 240 } },
     { label: "", sx: { width: 60 } },
     { label: "To", sx: { width: 240 } },
